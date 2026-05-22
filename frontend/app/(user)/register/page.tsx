@@ -325,7 +325,7 @@ export default function RegisterPage() {
 
               {/* Notice */}
               <div style={{ marginTop: '1.75rem', background: 'var(--blue-50)', border: '1px solid var(--blue-100)', borderRadius: 10, padding: '.875rem 1.125rem', fontSize: '.875rem', color: 'var(--blue-800)', lineHeight: 1.65 }}>
-                <strong>Note:</strong> After submission, your application enters a <strong>Pending Approval</strong> state. An admin will review it within 24 hours. Save your <strong>Registration ID</strong> to check status later.
+                <strong>Note:</strong> After submission, your application enters a <strong>Pending Approval</strong> state. An admin will review it within 24 hours. Track status using your registered mobile number.
               </div>
 
               <button
@@ -384,7 +384,7 @@ export default function RegisterPage() {
               </div>
 
               <p style={{ color: 'var(--text-muted)', fontSize: '.84rem', marginBottom: '1.5rem' }}>
-                📌 Please note your Registration ID: <strong style={{ color: 'var(--blue-700)' }}>{success.registration_id}</strong>
+                📌 Please note your Registration ID: <strong style={{ color: 'var(--blue-700)' }}>{success.registration_id}</strong>. Track status using your registered mobile number.
               </p>
 
               <div style={{ display: 'flex', gap: '.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
