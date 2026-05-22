@@ -70,6 +70,8 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+  console.log(`[Geocode API] Request received for PIN code: ${pin_code}. API Key present: ${!!apiKey}`);
+
   // Try Google Maps Geocoding API first
   if (apiKey && apiKey !== 'your_google_maps_api_key_here') {
     try {
@@ -98,6 +100,7 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
           }
         }
 
+        console.log(`[Geocode API] Google Maps successfully resolved location for PIN code ${pin_code}: ${city}, ${district}, ${state}, ${country}`);
         // Return resolved location
         res.json({
           city: city || district,
@@ -107,15 +110,18 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
         });
         return;
       } else {
-        console.warn(`Google Maps Geocoding returned non-OK status: ${googleData.status}. Falling back...`);
+        console.warn(`[Geocode API] Google Maps Geocoding returned non-OK status: "${googleData.status}". Error Message: "${googleData.error_message || 'None'}". Falling back to postal API...`);
       }
-    } catch (err) {
-      console.error('Google Geocoding error, falling back to Indian Post API:', err);
+    } catch (err: any) {
+      console.error('[Geocode API] Google Geocoding error, falling back to Indian Post API:', err.message || err);
     }
+  } else {
+    console.log('[Geocode API] Google Maps API key is missing or not configured. Falling back to postal API...');
   }
 
   // Fallback to Indian Post PIN code API
   try {
+    console.log(`[Geocode API] Attempting fallback for PIN code ${pin_code} using Indian Post API...`);
     const postData = await fetchPincodeFallback(pin_code);
 
     if (postData && postData[0] && postData[0].Status === 'Success' && postData[0].PostOffice && postData[0].PostOffice.length > 0) {
@@ -126,6 +132,7 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
       // Use Block for Taluk/City, if NA use District or Name
       const city = po.Block && po.Block !== 'NA' ? po.Block : (po.District || po.Name);
 
+      console.log(`[Geocode API] Postal API successfully resolved location for PIN code ${pin_code}: ${city}, ${district}, ${state}, ${country}`);
       res.json({
         city: city,
         district: district,
@@ -133,10 +140,13 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
         country: country
       });
     } else {
+      const postalStatus = postData && postData[0] ? postData[0].Status : 'Unknown';
+      const postalMessage = postData && postData[0] ? postData[0].Message : 'No details';
+      console.warn(`[Geocode API] Postal API returned status: "${postalStatus}" with message: "${postalMessage}". PIN code not found.`);
       res.status(404).json({ error: 'PIN code not found. Please enter details manually.' });
     }
   } catch (err: any) {
-    console.error('Failed to resolve PIN code via both APIs:', err.message);
+    console.error(`[Geocode API] Failed to resolve PIN code ${pin_code} via Postal API fallback:`, err.message || err);
     res.status(502).json({ error: 'Failed to auto-detect location. Please enter manually.' });
   }
 });
