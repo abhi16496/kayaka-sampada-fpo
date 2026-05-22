@@ -12,7 +12,7 @@ import {
   TrendingUp, Calendar, ExternalLink
 } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = '';
 
 interface Registration {
   id: string; registration_id: string; full_name: string; parent_spouse_name: string;
