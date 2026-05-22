@@ -27,9 +27,17 @@ export default function AdminLoginPage() {
       router.push('/admin/dashboard');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || 'Invalid credentials');
+        if (!err.response) {
+          setError('Cannot connect to server. Make sure the backend is running on port 5000.');
+        } else if (err.response.status === 401) {
+          setError('Incorrect username or password. Please try again.');
+        } else if (err.response.status === 429) {
+          setError('Too many login attempts. Please wait and try again.');
+        } else {
+          setError(err.response.data?.error || 'Login failed. Please try again.');
+        }
       } else {
-        setError('Login failed. Please try again.');
+        setError('An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);

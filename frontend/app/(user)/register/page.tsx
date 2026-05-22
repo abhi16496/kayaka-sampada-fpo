@@ -65,6 +65,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<SuccessData | null>(null);
   const [serverError, setServerError] = useState('');
+  const [isDuplicate, setIsDuplicate] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoError, setGeoError] = useState('');
 
@@ -161,7 +162,7 @@ export default function RegisterPage() {
 
   const handleChange = (name: keyof FormData, value: string) => {
     // Clear server error when user starts correcting the form
-    if (serverError) setServerError('');
+    if (serverError) { setServerError(''); setIsDuplicate(false); }
     if (UC_FIELDS.includes(name)) {
       setValue(name, value.toUpperCase() as never, { shouldValidate: false });
     }
@@ -171,14 +172,31 @@ export default function RegisterPage() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     setServerError('');
+    setIsDuplicate(false);
     try {
       const res = await axios.post(`${API_URL}/api/register`, data);
       setSuccess(res.data.registration);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setServerError(err.response?.data?.error || 'Registration failed. Please try again.');
+        const status = err.response?.status;
+        const serverMsg = err.response?.data?.error;
+        if (!err.response) {
+          // Network error — cannot reach the server
+          setServerError('Unable to reach the server. Please check your internet connection and try again.');
+        } else if (status === 409) {
+          setIsDuplicate(true);
+          setServerError(serverMsg || 'This mobile number is already registered.');
+        } else if (status === 429) {
+          setServerError('Too many registration attempts. Please wait a while and try again.');
+        } else if (status === 400) {
+          setServerError(serverMsg || 'Some fields are invalid. Please review your inputs and try again.');
+        } else if (status && status >= 500) {
+          setServerError('Server error. Please try again in a few minutes.');
+        } else {
+          setServerError(serverMsg || 'Registration failed. Please try again.');
+        }
       } else {
-        setServerError('Registration failed. Please try again.');
+        setServerError('An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -240,9 +258,16 @@ export default function RegisterPage() {
                   style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-bdr)', borderRadius: 10, padding: '1rem 1.125rem', marginBottom: '1.5rem', display: 'flex', gap: '.75rem', alignItems: 'flex-start' }}
                 >
                   <X size={17} color="var(--danger)" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <div>
-                    <p style={{ fontWeight: 700, color: 'var(--danger)', fontSize: '.9rem', marginBottom: 3 }}>Submission Error</p>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontWeight: 700, color: 'var(--danger)', fontSize: '.9rem', marginBottom: 3 }}>
+                      {isDuplicate ? 'Already Registered' : 'Submission Error'}
+                    </p>
                     <p style={{ color: 'var(--danger)', fontSize: '.875rem' }}>{serverError}</p>
+                    {isDuplicate && (
+                      <Link href="/status" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--danger)', fontWeight: 700, fontSize: '.84rem', textDecoration: 'underline' }}>
+                        Check your registration status →
+                      </Link>
+                    )}
                   </div>
                 </motion.div>
               )}
