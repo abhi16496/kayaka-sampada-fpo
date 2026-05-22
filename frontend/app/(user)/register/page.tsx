@@ -95,16 +95,16 @@ export default function RegisterPage() {
             if (country) setValue('country', country.toUpperCase(), { shouldValidate: true });
           }
         } catch (err: any) {
-          console.warn('Backend geocoding failed. Attempting direct client-side Indian Post PIN Code API fallback...', err.message || err);
+          console.warn('Backend geocoding failed. Attempting direct client-side Nominatim fallback...', err.message || err);
           try {
-            // Direct request from the client's browser (residential/mobile IP won't be blocked)
-            const response = await axios.get(`https://api.postalpincode.in/pincode/${pinCode}`);
-            if (response.data && response.data[0] && response.data[0].Status === 'Success' && response.data[0].PostOffice && response.data[0].PostOffice.length > 0) {
-              const po = response.data[0].PostOffice[0];
-              const state = po.State;
-              const district = po.District;
-              const country = po.Country || 'India';
-              const city = po.Block && po.Block !== 'NA' ? po.Block : (po.District || po.Name);
+            // Direct request to OpenStreetMap Nominatim from the client's browser (supports CORS, valid SSL, free)
+            const response = await axios.get(`https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1`);
+            if (response.data && response.data.length > 0 && response.data[0].address) {
+              const address = response.data[0].address;
+              const city = address.city || address.town || address.village || address.suburb || address.county || '';
+              const district = address.state_district || address.county || '';
+              const state = address.state || '';
+              const country = address.country || 'India';
 
               if (city) setValue('taluk', city.toUpperCase(), { shouldValidate: true });
               if (district) setValue('district', district.toUpperCase(), { shouldValidate: true });
@@ -113,13 +113,35 @@ export default function RegisterPage() {
               
               setGeoError('');
             } else {
+              throw new Error('Nominatim returned no matching records');
+            }
+          } catch (osmErr: any) {
+            console.warn('Direct client-side Nominatim also failed. Trying Indian Post API fallback...', osmErr.message || osmErr);
+            try {
+              // Final fallback: Direct request from the client's browser to Indian Post API
+              const response = await axios.get(`https://api.postalpincode.in/pincode/${pinCode}`);
+              if (response.data && response.data[0] && response.data[0].Status === 'Success' && response.data[0].PostOffice && response.data[0].PostOffice.length > 0) {
+                const po = response.data[0].PostOffice[0];
+                const state = po.State;
+                const district = po.District;
+                const country = po.Country || 'India';
+                const city = po.Block && po.Block !== 'NA' ? po.Block : (po.District || po.Name);
+
+                if (city) setValue('taluk', city.toUpperCase(), { shouldValidate: true });
+                if (district) setValue('district', district.toUpperCase(), { shouldValidate: true });
+                if (state) setValue('state', state.toUpperCase(), { shouldValidate: true });
+                if (country) setValue('country', country.toUpperCase(), { shouldValidate: true });
+                
+                setGeoError('');
+              } else {
+                const errorMsg = err.response?.data?.error || 'Failed to detect location. Please enter manually.';
+                setGeoError(errorMsg);
+              }
+            } catch (fallbackErr: any) {
+              console.error('Direct client-side Indian Post API fallback also failed:', fallbackErr.message || fallbackErr);
               const errorMsg = err.response?.data?.error || 'Failed to detect location. Please enter manually.';
               setGeoError(errorMsg);
             }
-          } catch (fallbackErr: any) {
-            console.error('Direct client-side Indian Post API fallback also failed:', fallbackErr.message || fallbackErr);
-            const errorMsg = err.response?.data?.error || 'Failed to detect location. Please enter manually.';
-            setGeoError(errorMsg);
           }
         } finally {
           setGeoLoading(false);

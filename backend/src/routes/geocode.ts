@@ -58,6 +58,36 @@ const fetchHttps = (url: string): Promise<any> => {
   });
 };
 
+// Helper for OpenStreetMap Nominatim lookup
+const fetchNominatim = (pinCode: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1`;
+    const options = {
+      headers: {
+        'User-Agent': 'KayakaSampadaFPO-PWA/1.0'
+      }
+    };
+    https.get(url, options, (res) => {
+      if (res.statusCode !== 200) {
+        return reject(new Error(`Nominatim query failed with status ${res.statusCode}`));
+      }
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(new Error('Failed to parse Nominatim response'));
+        }
+      });
+    }).on('error', (err) => {
+      reject(err);
+    });
+  });
+};
+
 // GET /api/geocode/:pin_code
 router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
   const { pin_code } = req.params;
@@ -110,16 +140,42 @@ router.get('/:pin_code', async (req: Request, res: Response): Promise<void> => {
         });
         return;
       } else {
-        console.warn(`[Geocode API] Google Maps Geocoding returned non-OK status: "${googleData.status}". Error Message: "${googleData.error_message || 'None'}". Falling back to postal API...`);
+        console.warn(`[Geocode API] Google Maps Geocoding returned non-OK status: "${googleData.status}". Error Message: "${googleData.error_message || 'None'}". Trying Nominatim...`);
       }
     } catch (err: any) {
-      console.error('[Geocode API] Google Geocoding error, falling back to Indian Post API:', err.message || err);
+      console.error('[Geocode API] Google Geocoding error, trying Nominatim:', err.message || err);
     }
   } else {
-    console.log('[Geocode API] Google Maps API key is missing or not configured. Falling back to postal API...');
+    console.log('[Geocode API] Google Maps API key is missing or not configured. Trying Nominatim...');
   }
 
-  // Fallback to Indian Post PIN code API
+  // Try OpenStreetMap Nominatim API second (Highly reliable, free, valid SSL, does not block datacenter IPs)
+  try {
+    console.log(`[Geocode API] Attempting OpenStreetMap Nominatim lookup for PIN code ${pin_code}...`);
+    const osmData = await fetchNominatim(pin_code);
+    if (osmData && osmData.length > 0 && osmData[0].address) {
+      const address = osmData[0].address;
+      const city = address.city || address.town || address.village || address.suburb || address.county || '';
+      const district = address.state_district || address.county || '';
+      const state = address.state || '';
+      const country = address.country || 'India';
+
+      console.log(`[Geocode API] Nominatim successfully resolved location for PIN code ${pin_code}: ${city}, ${district}, ${state}, ${country}`);
+      res.json({
+        city: city,
+        district: district,
+        state: state,
+        country: country
+      });
+      return;
+    } else {
+      console.warn(`[Geocode API] Nominatim returned no results for PIN code ${pin_code}. Trying Postal API fallback...`);
+    }
+  } catch (err: any) {
+    console.error('[Geocode API] Nominatim lookup failed, trying Postal API fallback:', err.message || err);
+  }
+
+  // Fallback to Indian Post PIN code API (as a final server-side backup)
   try {
     console.log(`[Geocode API] Attempting fallback for PIN code ${pin_code} using Indian Post API...`);
     const postData = await fetchPincodeFallback(pin_code);
