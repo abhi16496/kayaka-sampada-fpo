@@ -46,8 +46,13 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
   }
 
   // Phone validation
-  const phoneClean = String(phone).replace(/\D/g, '');
-  if (phoneClean.length < 10 || phoneClean.length > 15) {
+  let phoneClean = String(phone).replace(/\D/g, '');
+  if (phoneClean.length < 10) {
+    res.status(400).json({ error: 'Invalid phone number' });
+    return;
+  }
+  phoneClean = phoneClean.slice(-10);
+  if (!/^[6-9]\d{9}$/.test(phoneClean)) {
     res.status(400).json({ error: 'Invalid phone number' });
     return;
   }
@@ -115,15 +120,26 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         submitted_at: reg.submitted_at,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Registration error:', err);
+    if (err?.message?.includes('UNIQUE constraint failed') || err?.code === 'SQLITE_CONSTRAINT' || err?.code === '23505') {
+      res.status(409).json({
+        error: 'A registration with this phone number already exists.',
+      });
+      return;
+    }
     res.status(500).json({ error: 'Failed to submit registration' });
   }
 });
 
 // GET /api/register/status/:phone
 router.get('/status/:phone', async (req: Request, res: Response): Promise<void> => {
-  const phoneClean = req.params.phone.replace(/\D/g, '');
+  let phoneClean = req.params.phone.replace(/\D/g, '');
+  if (phoneClean.length < 10) {
+    res.status(400).json({ error: 'Invalid phone number' });
+    return;
+  }
+  phoneClean = phoneClean.slice(-10);
 
   try {
     const result = await pool.query(
