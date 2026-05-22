@@ -315,4 +315,37 @@ router.get('/logs', async (req: AuthRequest, res: Response): Promise<void> => {
   }
 });
 
+// ─── Delete Registration ─────────────────────────────────────────
+// DELETE /api/admin/registrations/:id
+router.delete('/registrations/:id', async (req: AuthRequest, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const check = await pool.query('SELECT * FROM registrations WHERE id = ?', [id]);
+    if (check.rows.length === 0) {
+      res.status(404).json({ error: 'Registration not found' });
+      return;
+    }
+
+    const reg = check.rows[0];
+
+    // Set registration_id to NULL on activity logs referencing this registration
+    await pool.query('UPDATE activity_logs SET registration_id = NULL WHERE registration_id = ?', [id]);
+
+    // Delete the registration
+    await pool.query('DELETE FROM registrations WHERE id = ?', [id]);
+
+    // Insert an activity log for the deletion
+    await pool.query(
+      'INSERT INTO activity_logs (id, admin_id, action, details) VALUES (?, ?, ?, ?)',
+      [uuidv4(), req.admin!.id, 'delete', `Deleted registration ${reg.registration_id} (${reg.full_name})`]
+    );
+
+    res.json({ message: 'Registration deleted successfully' });
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).json({ error: 'Failed to delete registration' });
+  }
+});
+
 export default router;

@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Users, Clock, CheckCircle, XCircle, LogOut,
   Search, Download, Eye, ChevronLeft, ChevronRight,
   Menu, X, FileText, Activity, RefreshCw, AlertCircle,
-  TrendingUp, Calendar, ExternalLink
+  TrendingUp, Calendar, ExternalLink, Trash2
 } from 'lucide-react';
 
 const API_URL = '';
@@ -57,6 +57,14 @@ export default function AdminDashboard() {
   const [sortBy, setSortBy]      = useState('submitted_at');
   const [sortOrder, setSortOrder]= useState('DESC');
   const [adminUser, setAdminUser] = useState<{ username: string } | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const closeDetailsModal = () => {
+    setSelectedReg(null);
+    setShowRejectInput(false);
+    setRejectReason('');
+    setShowDeleteConfirm(false);
+  };
 
   // ── Auth guard ────────────────────────────────────────────────
   useEffect(() => {
@@ -163,6 +171,20 @@ export default function AdminDashboard() {
       fetchDashboard(); fetchRegs(section, page, search, sortBy, sortOrder);
     } catch (err: unknown) {
       toast.error(axios.isAxiosError(err) ? err.response?.data?.error || 'Action failed' : 'Action failed');
+    } finally { setActionLoading(false); }
+  };
+
+  // ── Delete ────────────────────────────────────────────────────
+  const deleteRegistration = async (id: string) => {
+    setActionLoading(true);
+    try {
+      await axios.delete(`${API_URL}/api/admin/registrations/${id}`, { headers: authHeaders() });
+      toast.success('Registration deleted successfully!');
+      setSelectedReg(null);
+      setShowDeleteConfirm(false);
+      fetchDashboard(); fetchRegs(section, page, search, sortBy, sortOrder);
+    } catch (err: unknown) {
+      toast.error(axios.isAxiosError(err) ? err.response?.data?.error || 'Deletion failed' : 'Deletion failed');
     } finally { setActionLoading(false); }
   };
 
@@ -486,7 +508,7 @@ export default function AdminDashboard() {
                             <td>
                               <button
                                 id={`view-${reg.id}`}
-                                onClick={() => { setSelectedReg(reg); setShowRejectInput(false); setRejectReason(''); }}
+                                onClick={() => { setSelectedReg(reg); setShowRejectInput(false); setRejectReason(''); setShowDeleteConfirm(false); }}
                                 className="btn btn-ghost btn-sm"
                                 style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                               >
@@ -555,7 +577,7 @@ export default function AdminDashboard() {
       {/* ── Registration Detail Modal ──────────────────────────────── */}
       <AnimatePresence>
         {selectedReg && (
-          <div className="modal-overlay" onClick={() => setSelectedReg(null)}>
+          <div className="modal-overlay" onClick={closeDetailsModal}>
             <motion.div
               className="modal-box"
               initial={{ opacity: 0, scale: .9, y: 20 }}
@@ -573,7 +595,7 @@ export default function AdminDashboard() {
                   <span className={`badge ${STATUS_COLORS[selectedReg.status].badge}`}>
                     {selectedReg.status.charAt(0).toUpperCase() + selectedReg.status.slice(1)}
                   </span>
-                  <button onClick={() => setSelectedReg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, borderRadius: 6 }}>
+                  <button onClick={closeDetailsModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, borderRadius: 6 }}>
                     <X size={20} />
                   </button>
                 </div>
@@ -635,9 +657,29 @@ export default function AdminDashboard() {
               </div>
 
               {/* Modal actions */}
-              <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '.75rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                {!showRejectInput ? (
+              <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '.75rem', justifyContent: 'flex-end', flexWrap: 'wrap', alignItems: 'center' }}>
+                {showDeleteConfirm ? (
                   <>
+                    <p style={{ marginRight: 'auto', color: 'var(--danger)', fontSize: '.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <AlertCircle size={16} /> Permanently delete registration?
+                    </p>
+                    <button onClick={() => setShowDeleteConfirm(false)} className="btn btn-ghost">Cancel</button>
+                    <button id="confirm-delete-btn" onClick={() => deleteRegistration(selectedReg.id)} className="btn btn-danger" disabled={actionLoading}>
+                      {actionLoading ? <><div className="spinner" />Deleting...</> : <><Trash2 size={16} />Confirm Delete</>}
+                    </button>
+                  </>
+                ) : showRejectInput ? (
+                  <>
+                    <button onClick={() => { setShowRejectInput(false); setRejectReason(''); }} className="btn btn-ghost">Cancel</button>
+                    <button id="confirm-reject-btn" onClick={() => reject(selectedReg.id)} className="btn btn-danger" disabled={actionLoading}>
+                      {actionLoading ? <><div className="spinner" />Processing...</> : <><XCircle size={16} />Confirm Reject</>}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => setShowDeleteConfirm(true)} className="btn btn-danger" style={{ marginRight: 'auto', display: 'flex', alignItems: 'center', gap: 4 }} disabled={actionLoading}>
+                      <Trash2 size={16} /> Delete
+                    </button>
                     {selectedReg.status !== 'pending' && (
                       <button onClick={() => markPending(selectedReg.id)} className="btn btn-ghost" disabled={actionLoading}>
                         <Clock size={16} /> Mark as Pending
@@ -653,13 +695,6 @@ export default function AdminDashboard() {
                         {actionLoading ? <><div className="spinner" />Processing...</> : <><CheckCircle size={16} />Approve</>}
                       </button>
                     )}
-                  </>
-                ) : (
-                  <>
-                    <button onClick={() => { setShowRejectInput(false); setRejectReason(''); }} className="btn btn-ghost">Cancel</button>
-                    <button id="confirm-reject-btn" onClick={() => reject(selectedReg.id)} className="btn btn-danger" disabled={actionLoading}>
-                      {actionLoading ? <><div className="spinner" />Processing...</> : <><XCircle size={16} />Confirm Reject</>}
-                    </button>
                   </>
                 )}
               </div>

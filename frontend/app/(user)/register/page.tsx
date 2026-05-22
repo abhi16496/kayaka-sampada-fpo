@@ -59,7 +59,6 @@ const FIELDS: Array<{
   { name: 'email',              label: 'Email ID',                     placeholder: 'your@email.com',               icon: Mail, type: 'email', optional: true },
 ];
 
-const UC_FIELDS: (keyof FormData)[] = ['full_name', 'parent_spouse_name', 'full_address', 'area_village', 'taluk', 'district', 'state', 'country'];
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -90,10 +89,10 @@ export default function RegisterPage() {
           const response = await axios.get(`${API_URL}/api/geocode/${pinCode}`);
           if (response.data) {
             const { city, district, state, country } = response.data;
-            if (city) setValue('taluk', city.toUpperCase(), { shouldValidate: true });
-            if (district) setValue('district', district.toUpperCase(), { shouldValidate: true });
-            if (state) setValue('state', state.toUpperCase(), { shouldValidate: true });
-            if (country) setValue('country', country.toUpperCase(), { shouldValidate: true });
+            if (city) setValue('taluk', city, { shouldValidate: true });
+            if (district) setValue('district', district, { shouldValidate: true });
+            if (state) setValue('state', state, { shouldValidate: true });
+            if (country) setValue('country', country, { shouldValidate: true });
           }
         } catch (err: any) {
           console.warn('Backend geocoding failed. Attempting direct client-side Nominatim fallback...', err.message || err);
@@ -107,10 +106,10 @@ export default function RegisterPage() {
               const state = address.state || '';
               const country = address.country || 'India';
 
-              if (city) setValue('taluk', city.toUpperCase(), { shouldValidate: true });
-              if (district) setValue('district', district.toUpperCase(), { shouldValidate: true });
-              if (state) setValue('state', state.toUpperCase(), { shouldValidate: true });
-              if (country) setValue('country', country.toUpperCase(), { shouldValidate: true });
+              if (city) setValue('taluk', city, { shouldValidate: true });
+              if (district) setValue('district', district, { shouldValidate: true });
+              if (state) setValue('state', state, { shouldValidate: true });
+              if (country) setValue('country', country, { shouldValidate: true });
               
               setGeoError('');
             } else {
@@ -128,10 +127,10 @@ export default function RegisterPage() {
                 const country = po.Country || 'India';
                 const city = po.Block && po.Block !== 'NA' ? po.Block : (po.District || po.Name);
 
-                if (city) setValue('taluk', city.toUpperCase(), { shouldValidate: true });
-                if (district) setValue('district', district.toUpperCase(), { shouldValidate: true });
-                if (state) setValue('state', state.toUpperCase(), { shouldValidate: true });
-                if (country) setValue('country', country.toUpperCase(), { shouldValidate: true });
+                if (city) setValue('taluk', city, { shouldValidate: true });
+                if (district) setValue('district', district, { shouldValidate: true });
+                if (state) setValue('state', state, { shouldValidate: true });
+                if (country) setValue('country', country, { shouldValidate: true });
                 
                 setGeoError('');
               } else {
@@ -163,9 +162,6 @@ export default function RegisterPage() {
   const handleChange = (name: keyof FormData, value: string) => {
     // Clear server error when user starts correcting the form
     if (serverError) { setServerError(''); setIsDuplicate(false); }
-    if (UC_FIELDS.includes(name)) {
-      setValue(name, value.toUpperCase() as never, { shouldValidate: false });
-    }
   };
 
 
