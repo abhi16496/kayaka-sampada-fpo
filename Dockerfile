@@ -2,6 +2,7 @@
 FROM node:20-alpine AS backend-builder
 WORKDIR /app/backend
 COPY backend/package*.json ./
+RUN apk add --no-cache python3 make g++
 RUN npm ci
 COPY backend/ ./
 RUN npm run build
@@ -31,7 +32,9 @@ RUN npm install -g concurrently
 # Copy Backend production assets
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --omit=dev
+RUN apk add --no-cache --virtual .build-deps python3 make g++ \
+    && npm ci --omit=dev \
+    && apk del .build-deps
 COPY --from=backend-builder /app/backend/dist ./dist
 
 # Copy Frontend production assets
