@@ -33,11 +33,6 @@ export default function UserHomePage() {
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
             <Search size={15} /> Check Status
           </Link>
-          <Link href="/admin/login" style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-muted)', fontWeight: 500, textDecoration: 'none', fontSize: '.85rem', padding: '.4rem .75rem', borderRadius: 8, border: '1px solid var(--border)', transition: 'all .2s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}>
-            <Shield size={14} /> Admin
-          </Link>
           <Link href="/register" className="btn btn-primary btn-sm">
             Register Now
           </Link>
@@ -81,7 +76,7 @@ export default function UserHomePage() {
       {/* ── Trust bar ──────────────────────────────────────────── */}
       <section style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.25rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center' }}>
-          {[['Secure Portal', '256-bit'], ['Review Time', '< 24 hrs'], ['Availability', '24 / 7']].map(([label, val]) => (
+          {[['Secure Portal', 'SSL Secured'], ['Review Time', '< 24 hrs'], ['Availability', '24 / 7']].map(([label, val]) => (
             <div key={label}>
               <p style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--blue-800)' }}>{val}</p>
               <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: 2 }}>{label}</p>
