@@ -61,7 +61,7 @@ const fetchHttps = (url: string): Promise<any> => {
 // Helper for OpenStreetMap Nominatim lookup
 const fetchNominatim = (pinCode: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const url = `https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1`;
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1&accept-language=en`;
     const options = {
       headers: {
         'User-Agent': 'KayakaSampadaFPO-PWA/1.0'

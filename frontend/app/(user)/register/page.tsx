@@ -98,7 +98,7 @@ export default function RegisterPage() {
           console.warn('Backend geocoding failed. Attempting direct client-side Nominatim fallback...', err.message || err);
           try {
             // Direct request to OpenStreetMap Nominatim from the client's browser (supports CORS, valid SSL, free)
-            const response = await axios.get(`https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1`);
+            const response = await axios.get(`https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1&accept-language=en`);
             if (response.data && response.data.length > 0 && response.data[0].address) {
               const address = response.data[0].address;
               const city = address.city || address.town || address.village || address.suburb || address.county || '';
