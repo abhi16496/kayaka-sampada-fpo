@@ -3,6 +3,8 @@ FROM node:20-alpine AS backend-builder
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN apk add --no-cache python3 make g++
+# Force development so npm ci installs devDependencies (TypeScript, etc.)
+ENV NODE_ENV=development
 RUN npm ci
 COPY backend/ ./
 RUN npm run build
@@ -11,12 +13,14 @@ RUN npm run build
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
+# Force development so npm ci installs devDependencies (Next.js build tools, etc.)
+ENV NODE_ENV=development
 RUN npm ci
 COPY frontend/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 ENV NEXT_PUBLIC_API_URL=http://localhost:5000
-RUN npm run build
+# Set production only for the actual build step
+RUN NODE_ENV=production npm run build
 
 # ─── Stage 3: Runner ─────────────────────────────────────────────
 FROM node:20-alpine AS runner
