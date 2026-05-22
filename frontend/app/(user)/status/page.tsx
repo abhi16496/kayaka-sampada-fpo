@@ -8,7 +8,7 @@ import {
   Clock, CheckCircle, XCircle, AlertCircle
 } from 'lucide-react';
 
-const API_URL = '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 interface StatusData {
   registration_id: string;
