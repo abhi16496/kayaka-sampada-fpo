@@ -14,7 +14,6 @@ import { testConnection } from './models/db';
 dotenv.config();
 
 const app = express();
-app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // ─── Security Middleware ──────────────────────────────────────
@@ -33,7 +32,7 @@ const limiter = rateLimit({
 const registrationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,   // 1 hour
   max: 50,
-  message: { error: 'Too many registration attempts from this IP.' },
+  message: { error: 'Too many registration attempts from this IP. Please try again later.' },
 });
 
 app.use(limiter);

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { Lock, User, Eye, EyeOff, Shield, FileText, ArrowLeft } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_URL = '';
 
 export default function AdminLoginPage() {
   const router = useRouter();

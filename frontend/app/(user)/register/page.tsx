@@ -11,7 +11,7 @@ import {
   MapPin, Hash, Building, Phone, Mail, CheckCircle, X, ChevronRight
 } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_URL = '';
 
 const schema = z.object({
   full_name:          z.string().min(3, 'Full name must be at least 3 characters'),
@@ -160,6 +160,8 @@ export default function RegisterPage() {
   }, [pinCode, setValue]);
 
   const handleChange = (name: keyof FormData, value: string) => {
+    // Clear server error when user starts correcting the form
+    if (serverError) setServerError('');
     if (UC_FIELDS.includes(name)) {
       setValue(name, value.toUpperCase() as never, { shouldValidate: false });
     }

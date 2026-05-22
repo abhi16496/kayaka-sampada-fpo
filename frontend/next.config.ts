@@ -3,13 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Allow API calls to backend
   async rewrites() {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const fallback = isProduction ? 'http://backend:5000' : 'http://localhost:5000';
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || fallback;
     return [
       {
         source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/:path*`,
       },
     ];
   },
