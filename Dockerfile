@@ -36,7 +36,8 @@ RUN npm install -g concurrently
 # Copy Backend production assets
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN apk add --no-cache --virtual .build-deps python3 make g++ \
+RUN apk add --no-cache libstdc++ \
+    && apk add --no-cache --virtual .build-deps python3 make g++ \
     && npm ci --omit=dev \
     && apk del .build-deps
 COPY --from=backend-builder /app/backend/dist ./dist
@@ -52,4 +53,4 @@ EXPOSE 3000
 
 # Run both backend and frontend concurrently under their respective directories
 WORKDIR /app
-CMD ["concurrently", "--names", "backend,frontend", "-c", "yellow,blue", "cd /app/backend && node dist/index.js", "cd /app/frontend && node server.js"]
+CMD ["concurrently", "-k", "--names", "backend,frontend", "-c", "yellow,blue", "cd /app/backend && PORT=5000 node dist/index.js", "cd /app/frontend && node server.js"]
