@@ -383,10 +383,6 @@ export default function RegisterPage() {
                 ))}
               </div>
 
-              <p style={{ color: 'var(--text-muted)', fontSize: '.84rem', marginBottom: '1.5rem' }}>
-                📌 Please note your Registration ID: <strong style={{ color: 'var(--blue-700)' }}>{success.registration_id}</strong>. Track status using your registered mobile number.
-              </p>
-
               <div style={{ display: 'flex', gap: '.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/status" className="btn btn-primary">Check Status</Link>
                 <Link href="/" className="btn btn-ghost">Back to Home</Link>
