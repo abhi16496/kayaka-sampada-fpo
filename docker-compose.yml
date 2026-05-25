@@ -1,28 +1,6 @@
 version: '3.9'
 
 services:
-  # ─── PostgreSQL Database ──────────────────────────────────────
-  postgres:
-    image: postgres:16-alpine
-    container_name: kayaka-sampada-db
-    restart: always
-    environment:
-      POSTGRES_DB: registration_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - kayaka-sampada-net
-
   # ─── Backend API ──────────────────────────────────────────────
   backend:
     build:
@@ -30,20 +8,20 @@ services:
       dockerfile: Dockerfile
     container_name: kayaka-sampada-api
     restart: always
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 5000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: registration_db
-      DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production-please}
       JWT_EXPIRES_IN: 8h
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      # AWS SES — email notifications on admin approval
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_SES_SENDER: ${AWS_SES_SENDER:-no-reply@kayakasampadafpo.org}
+    volumes:
+      # Named persistent volume for SQLite database — survives container restarts and redeploys
+      - sqlite_data:/app/backend/data
     ports:
       - "5000:5000"
     networks:
@@ -67,7 +45,8 @@ services:
       - kayaka-sampada-net
 
 volumes:
-  postgres_data:
+  # Persistent named volume for the SQLite database file
+  sqlite_data:
     driver: local
 
 networks:

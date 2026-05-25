@@ -1,8 +1,18 @@
 import sqlite3 from 'sqlite3';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
 
-// Initialize SQLite database
-const db = new (sqlite3.verbose()).Database('./database.sqlite');
+// Store database in a dedicated /data directory so it can be mounted
+// as a persistent Docker volume — prevents data loss on container restarts/redeploys.
+const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+const DB_PATH = path.join(DATA_DIR, 'database.sqlite');
+
+// Initialize SQLite database at the persistent path
+const db = new (sqlite3.verbose()).Database(DB_PATH);
 
 export const testConnection = async (): Promise<void> => {
   return new Promise((resolve, reject) => {
