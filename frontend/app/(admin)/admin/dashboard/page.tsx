@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Users, Clock, CheckCircle, XCircle, LogOut,
   Search, Download, Eye, ChevronLeft, ChevronRight,
   Menu, X, FileText, Activity, RefreshCw, AlertCircle,
-  TrendingUp, Calendar, ExternalLink, Trash2
+  TrendingUp, Calendar, ExternalLink, Trash2, Sprout
 } from 'lucide-react';
 
 const API_URL = '';
@@ -228,19 +228,19 @@ export default function AdminDashboard() {
         {/* Logo */}
         <div style={{ padding: '1.375rem 1.25rem 1rem', borderBottom: '1px solid rgba(255,255,255,.07)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.625rem' }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue-700),var(--blue-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <FileText size={17} color="#fff" />
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--primary-forest),var(--primary-emerald))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Sprout size={17} color="var(--accent-amber)" />
             </div>
             <div>
-              <p style={{ fontWeight: 800, color: '#fff', fontSize: '.95rem', lineHeight: 1.1 }}>Kayaka Sampada</p>
-              <p style={{ color: 'rgba(255,255,255,.35)', fontSize: '.7rem', letterSpacing: '.04em' }}>ADMIN PANEL</p>
+              <p className="font-serif" style={{ fontWeight: 800, color: '#fff', fontSize: '.95rem', lineHeight: 1.1 }}>Kayaka Sampada</p>
+              <p style={{ color: 'rgba(255,255,255,.35)', fontSize: '.7rem', letterSpacing: '.04em', fontWeight: 700 }}>SECRETARIAT</p>
             </div>
           </div>
         </div>
 
         {/* Admin info */}
         <div style={{ padding: '.875rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,.07)', display: 'flex', alignItems: 'center', gap: '.625rem' }}>
-          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,var(--blue-700),var(--blue-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,var(--primary-forest),var(--primary-emerald))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <span style={{ color: '#fff', fontWeight: 700, fontSize: '.875rem' }}>
               {adminUser?.username?.[0]?.toUpperCase() || 'A'}
             </span>
@@ -330,11 +330,11 @@ export default function AdminDashboard() {
               {/* Stats */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
                 {[
-                  { label: 'Total',   value: stats?.total   || '—', icon: Users,        color: 'var(--blue-700)', bg: 'var(--blue-50)',    key: 'all' as Section },
-                  { label: 'Pending', value: stats?.pending  || '—', icon: Clock,        color: 'var(--warning)', bg: 'var(--warning-bg)', key: 'pending' as Section },
-                  { label: 'Approved',value: stats?.approved || '—', icon: CheckCircle,  color: 'var(--success)', bg: 'var(--success-bg)', key: 'approved' as Section },
-                  { label: 'Rejected',value: stats?.rejected || '—', icon: XCircle,      color: 'var(--danger)',  bg: 'var(--danger-bg)',  key: 'rejected' as Section },
-                  { label: "Today",   value: stats?.today    || '—', icon: Calendar,     color: '#7c3aed',        bg: '#f5f3ff',           key: 'all' as Section },
+                  { label: 'Total Members', value: stats?.total   || '—', icon: Users,        color: 'var(--primary-forest)', bg: 'rgba(18,53,36,0.05)', key: 'all' as Section },
+                  { label: 'Pending Committee', value: stats?.pending  || '—', icon: Clock,        color: 'var(--warning)', bg: 'var(--warning-bg)', key: 'pending' as Section },
+                  { label: 'Approved & Verified', value: stats?.approved || '—', icon: CheckCircle,  color: 'var(--success)', bg: 'var(--success-bg)', key: 'approved' as Section },
+                  { label: 'Disapproved', value: stats?.rejected || '—', icon: XCircle,      color: 'var(--danger)',  bg: 'var(--danger-bg)',  key: 'rejected' as Section },
+                  { label: "Joined Today", value: stats?.today    || '—', icon: Calendar,     color: 'var(--accent-gold)', bg: 'rgba(194,120,3,0.07)', key: 'all' as Section },
                 ].map((s, i) => (
                   <motion.button
                     key={s.label}
@@ -358,8 +358,8 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                 <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .3 }} className="card" style={{ padding: '1.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '1.25rem' }}>
-                    <TrendingUp size={17} color="var(--blue-700)" />
-                    <h3 style={{ fontWeight: 700, fontSize: '.95rem', color: 'var(--text-primary)' }}>Registrations — Last 7 Days</h3>
+                    <TrendingUp size={17} color="var(--primary-forest)" />
+                    <h3 style={{ fontWeight: 700, fontSize: '.95rem', color: 'var(--text-primary)' }}>Enrollments — Last 7 Days</h3>
                   </div>
                   {chartData.length === 0 ? (
                     <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>No data yet</p>
@@ -369,8 +369,8 @@ export default function AdminDashboard() {
                         const max = Math.max(...chartData.map(x => x.count), 1);
                         return (
                           <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                            <span style={{ fontSize: '.72rem', fontWeight: 700, color: 'var(--blue-700)' }}>{d.count}</span>
-                            <div style={{ width: '100%', height: `${Math.max((d.count / max) * 85, 6)}px`, background: 'linear-gradient(to top, var(--blue-800), var(--blue-500))', borderRadius: '4px 4px 0 0', transition: 'height .5s' }} />
+                            <span style={{ fontSize: '.72rem', fontWeight: 700, color: 'var(--primary-emerald)' }}>{d.count}</span>
+                            <div style={{ width: '100%', height: `${Math.max((d.count / max) * 85, 6)}px`, background: 'linear-gradient(to top, var(--primary-forest), var(--primary-emerald))', borderRadius: '4px 4px 0 0', transition: 'height .5s' }} />
                             <span style={{ fontSize: '.62rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                               {new Date(d.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                             </span>
@@ -383,12 +383,12 @@ export default function AdminDashboard() {
 
                 <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .3 }} className="card" style={{ padding: '1.5rem', maxHeight: 280, overflowY: 'auto' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '1.125rem' }}>
-                    <Activity size={17} color="var(--blue-700)" />
+                    <Activity size={17} color="var(--primary-forest)" />
                     <h3 style={{ fontWeight: 700, fontSize: '.95rem', color: 'var(--text-primary)' }}>Recent Activity</h3>
                   </div>
                   {logs.slice(0, 8).map((log, i) => (
                     <div key={i} style={{ display: 'flex', gap: '.75rem', marginBottom: '.75rem', paddingBottom: '.75rem', borderBottom: i < 7 ? '1px solid var(--border)' : 'none' }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: log.action === 'approve' ? 'var(--success)' : log.action === 'reject' ? 'var(--danger)' : 'var(--blue-500)', flexShrink: 0, marginTop: 6 }} />
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: log.action === 'approve' ? 'var(--success)' : log.action === 'reject' ? 'var(--danger)' : 'var(--primary-sage)', flexShrink: 0, marginTop: 6 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: '.84rem', color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.details}</p>
                         <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', marginTop: 1 }}>
@@ -491,7 +491,7 @@ export default function AdminDashboard() {
                         {registrations.map(reg => (
                           <tr key={reg.id}>
                             <td>
-                              <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '.84rem', color: 'var(--blue-700)' }}>{reg.registration_id}</span>
+                              <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '.84rem', color: 'var(--primary-emerald)' }}>{reg.registration_id}</span>
                             </td>
                             <td style={{ fontWeight: 600, color: 'var(--text-primary)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{reg.full_name}</td>
                             <td style={{ fontFamily: 'monospace', color: 'var(--text-secondary)', fontSize: '.88rem' }}>{reg.phone}</td>
@@ -559,7 +559,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ fontWeight: 600 }}>{log.admin_name}</td>
-                      <td style={{ fontFamily: 'monospace', color: 'var(--blue-700)', fontSize: '.84rem' }}>{log.registration_id || '—'}</td>
+                      <td style={{ fontFamily: 'monospace', color: 'var(--primary-emerald)', fontSize: '.84rem' }}>{log.registration_id || '—'}</td>
                       <td style={{ color: 'var(--text-secondary)', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.details}</td>
                       <td style={{ color: 'var(--text-muted)', fontSize: '.84rem', whiteSpace: 'nowrap' }}>{new Date(log.created_at).toLocaleString('en-IN')}</td>
                     </tr>

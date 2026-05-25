@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import axios from 'axios';
 import {
-  FileText, ArrowLeft, UserPlus, User, Users, Home,
-  MapPin, Hash, Building, Phone, Mail, CheckCircle, X, ChevronRight
+  ArrowLeft, UserPlus, User, Users, Home,
+  MapPin, Hash, Building, Phone, Mail, CheckCircle, X, ChevronRight, Sprout, Wheat, Printer
 } from 'lucide-react';
 
 const API_URL = '';
@@ -24,7 +24,7 @@ const schema = z.object({
   state:              z.string().min(2, 'State is required'),
   country:            z.string().min(2, 'Country is required'),
   phone:              z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number'),
-  email:              z.string().email('Invalid email').optional().or(z.literal('')),
+  email:              z.string().min(1, 'Email ID is required').email('Invalid email'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -38,6 +38,7 @@ interface SuccessData {
 const FIELDS: Array<{
   name: keyof FormData;
   label: string;
+  kannadaLabel: string;
   placeholder: string;
   icon: React.ElementType;
   type?: string;
@@ -46,17 +47,17 @@ const FIELDS: Array<{
   optional?: boolean;
   fullWidth?: boolean;
 }> = [
-  { name: 'full_name',          label: 'Full Name',                    placeholder: 'Enter your full name',         icon: User },
-  { name: 'parent_spouse_name', label: 'Father / Mother / Husband Name', placeholder: 'Enter name',                icon: Users },
-  { name: 'full_address',       label: 'Full Address',                 placeholder: 'Door no., Street, Locality...', icon: Home, tag: 'textarea', fullWidth: true },
-  { name: 'area_village',       label: 'Area / Village',               placeholder: 'Enter area or village',        icon: MapPin },
-  { name: 'pin_code',           label: 'PIN Code',                     placeholder: '6-digit PIN code',             icon: Hash, hint: '6 digits only' },
-  { name: 'taluk',              label: 'Taluk / City',                 placeholder: 'Enter taluk or city name',     icon: Building },
-  { name: 'district',           label: 'District',                     placeholder: 'Enter district',               icon: Building },
-  { name: 'state',              label: 'State',                        placeholder: 'Enter state',                  icon: MapPin },
-  { name: 'country',            label: 'Country',                      placeholder: 'Enter country',                icon: MapPin },
-  { name: 'phone',              label: 'Mobile Number',                placeholder: '10-digit mobile number',       icon: Phone, type: 'tel', hint: 'Used to check status later' },
-  { name: 'email',              label: 'Email ID',                     placeholder: 'your@email.com',               icon: Mail, type: 'email', optional: true },
+  { name: 'full_name',          label: 'Full Name',                    kannadaLabel: 'ಪೂರ್ಣ ಹೆಸರು',             placeholder: 'Enter your full name',         icon: User },
+  { name: 'parent_spouse_name', label: 'Father / Spouse Name',         kannadaLabel: 'ತಂದೆ / ಸಂಗಾತಿಯ ಹೆಸರು',     placeholder: 'Enter name',                icon: Users },
+  { name: 'full_address',       label: 'Full Address',                 kannadaLabel: 'ಪೂರ್ಣ ವಿಳಾಸ',             placeholder: 'Door no., Street, Locality...', icon: Home, tag: 'textarea', fullWidth: true },
+  { name: 'area_village',       label: 'Area / Village',               kannadaLabel: 'ಪ್ರದೇಶ / ಗ್ರಾಮ',          placeholder: 'Enter area or village',        icon: MapPin },
+  { name: 'pin_code',           label: 'PIN Code',                     kannadaLabel: 'ಪಿನ್ ಕೋಡ್',               placeholder: '6-digit PIN code',             icon: Hash, hint: '6 digits only' },
+  { name: 'taluk',              label: 'Taluk / City',                 kannadaLabel: 'ತಾಲ್ಲೂಕು / ನಗರ',           placeholder: 'Enter taluk or city name',     icon: Building },
+  { name: 'district',           label: 'District',                     kannadaLabel: 'ಜಿಲ್ಲೆ',                  placeholder: 'Enter district',               icon: Building },
+  { name: 'state',              label: 'State',                        kannadaLabel: 'ರಾಜ್ಯ',                   placeholder: 'Enter state',                  icon: MapPin },
+  { name: 'country',            label: 'Country',                      kannadaLabel: 'ದೇಶ',                    placeholder: 'Enter country',                icon: MapPin },
+  { name: 'phone',              label: 'Mobile Number',                kannadaLabel: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ',           placeholder: '10-digit mobile number',       icon: Phone, type: 'tel', hint: 'Used to check status later' },
+  { name: 'email',              label: 'Email ID',                     kannadaLabel: 'ಇಮೇಲ್ ವಿಳಾಸ',             placeholder: 'your@email.com',               icon: Mail, type: 'email' },
 ];
 
 
@@ -97,7 +98,6 @@ export default function RegisterPage() {
         } catch (err: any) {
           console.warn('Backend geocoding failed. Attempting direct client-side Nominatim fallback...', err.message || err);
           try {
-            // Direct request to OpenStreetMap Nominatim from the client's browser (supports CORS, valid SSL, free)
             const response = await axios.get(`https://nominatim.openstreetmap.org/search?postalcode=${pinCode}&country=India&format=json&addressdetails=1&accept-language=en`);
             if (response.data && response.data.length > 0 && response.data[0].address) {
               const address = response.data[0].address;
@@ -118,7 +118,6 @@ export default function RegisterPage() {
           } catch (osmErr: any) {
             console.warn('Direct client-side Nominatim also failed. Trying Indian Post API fallback...', osmErr.message || osmErr);
             try {
-              // Final fallback: Direct request from the client's browser to Indian Post API
               const response = await axios.get(`https://api.postalpincode.in/pincode/${pinCode}`);
               if (response.data && response.data[0] && response.data[0].Status === 'Success' && response.data[0].PostOffice && response.data[0].PostOffice.length > 0) {
                 const po = response.data[0].PostOffice[0];
@@ -146,7 +145,7 @@ export default function RegisterPage() {
         } finally {
           setGeoLoading(false);
         }
-      }, 600); // 600ms debounce
+      }, 600);
 
       return () => clearTimeout(delayDebounceFn);
     } else {
@@ -160,10 +159,8 @@ export default function RegisterPage() {
   }, [pinCode, setValue]);
 
   const handleChange = (name: keyof FormData, value: string) => {
-    // Clear server error when user starts correcting the form
     if (serverError) { setServerError(''); setIsDuplicate(false); }
   };
-
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -177,7 +174,6 @@ export default function RegisterPage() {
         const status = err.response?.status;
         const serverMsg = err.response?.data?.error;
         if (!err.response) {
-          // Network error — cannot reach the server
           setServerError('Unable to reach the server. Please check your internet connection and try again.');
         } else if (status === 409) {
           setIsDuplicate(true);
@@ -203,11 +199,14 @@ export default function RegisterPage() {
     <>
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="user-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'linear-gradient(135deg,var(--blue-800),var(--blue-500))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FileText size={17} color="#fff" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg,var(--primary-forest),var(--primary-emerald))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Sprout size={18} color="#fff" />
           </div>
-          <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>Kayaka Sampada</span>
+          <div>
+            <span className="font-serif" style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>ಕಾಯಕ ಸಂಪಾದ</span>
+            <span style={{ display: 'block', fontSize: '.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>FPO REGISTRATION</span>
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
           <Link href="/status" className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -220,29 +219,30 @@ export default function RegisterPage() {
       </header>
 
       {/* ── Page banner ─────────────────────────────────────────── */}
-      <div className="user-hero" style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
+      <div className="user-hero" style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 900, color: '#fff', marginBottom: '.5rem' }}>
-            New Registration
+          <span style={{ color: 'var(--accent-amber)', fontWeight: 800, fontSize: '.8rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>Member Application Form</span>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(1.75rem, 4.5vw, 2.5rem)', fontWeight: 700, color: '#fff', marginTop: '.25rem', marginBottom: '.5rem' }}>
+            FPO Membership Enrollment
           </h1>
-          <p style={{ color: 'rgba(255,255,255,.78)', fontSize: '1rem' }}>
-            Fill in all required fields. Fields marked <span style={{ color: '#fca5a5' }}>*</span> are mandatory.
+          <p style={{ color: 'rgba(255,255,255,.82)', fontSize: '.95rem', maxWidth: 480, margin: '0 auto' }}>
+            ಕಾಯಕ ಸಂಪಾದ ರೈತ ಉತ್ಪಾದಕ ಸಂಸ್ಥೆ ನೋಂದಣಿ. All fields are mandatory (ಎಲ್ಲಾ ವಿವರಗಳು ಕಡ್ಡಾಯ).
           </p>
         </motion.div>
       </div>
 
       {/* ── Form ────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '2rem 1rem 5rem' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '2rem 1rem 6rem' }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .08 }}>
 
           {/* Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-            <Link href="/" style={{ color: 'var(--blue-600)', textDecoration: 'none' }}>Home</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '.8rem', color: 'var(--text-muted)', marginBottom: '1.5rem', fontWeight: 600 }}>
+            <Link href="/" style={{ color: 'var(--primary-emerald)', textDecoration: 'none' }}>Home</Link>
             <ChevronRight size={13} />
-            <span>Registration Form</span>
+            <span style={{ opacity: .8 }}>FPO Membership Enrollment Form</span>
           </div>
 
-          <div className="card" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+          <div className="card card-textured" style={{ padding: 'clamp(1.5rem, 5vw, 3rem)', borderTop: '4px solid var(--primary-forest)' }}>
 
             {/* Server error */}
             <AnimatePresence>
@@ -251,17 +251,17 @@ export default function RegisterPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-bdr)', borderRadius: 10, padding: '1rem 1.125rem', marginBottom: '1.5rem', display: 'flex', gap: '.75rem', alignItems: 'flex-start' }}
+                  style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-bdr)', borderRadius: 12, padding: '1.15rem', marginBottom: '1.75rem', display: 'flex', gap: '.85rem', alignItems: 'flex-start' }}
                 >
-                  <X size={17} color="var(--danger)" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <X size={18} color="var(--danger)" style={{ flexShrink: 0, marginTop: 2 }} />
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 700, color: 'var(--danger)', fontSize: '.9rem', marginBottom: 3 }}>
-                      {isDuplicate ? 'Already Registered' : 'Submission Error'}
+                    <p style={{ fontWeight: 700, color: 'var(--danger)', fontSize: '.9rem', marginBottom: 4 }}>
+                      {isDuplicate ? 'Mobile Already Enrolled (ಮೊಬೈಲ್ ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲ್ಪಟ್ಟಿದೆ)' : 'Submission Error'}
                     </p>
-                    <p style={{ color: 'var(--danger)', fontSize: '.875rem' }}>{serverError}</p>
+                    <p style={{ color: 'var(--danger)', fontSize: '.875rem', lineHeight: 1.5 }}>{serverError}</p>
                     {isDuplicate && (
-                      <Link href="/status" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--danger)', fontWeight: 700, fontSize: '.84rem', textDecoration: 'underline' }}>
-                        Check your registration status →
+                      <Link href="/status" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8, color: 'var(--danger)', fontWeight: 700, fontSize: '.84rem', textDecoration: 'underline' }}>
+                        Check your verification status here →
                       </Link>
                     )}
                   </div>
@@ -270,23 +270,24 @@ export default function RegisterPage() {
             </AnimatePresence>
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
                 {FIELDS.map((field) => (
                   <div key={field.name} style={{ gridColumn: field.fullWidth ? '1 / -1' : undefined }}>
-                    <label className="form-label" htmlFor={field.name}>
-                      {field.label}
-                      {!field.optional && <span style={{ color: 'var(--danger)', marginLeft: 3 }}>*</span>}
-                      {field.optional && <span style={{ color: 'var(--text-muted)', marginLeft: 4, fontWeight: 400 }}>(Optional)</span>}
+                    <label className="form-label" htmlFor={field.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{field.label}</span>
+                      <span style={{ fontSize: '.72rem', color: 'var(--text-light)', fontWeight: 500, fontStyle: 'italic' }}>
+                        {field.kannadaLabel}
+                      </span>
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <field.icon size={16} style={{ position: 'absolute', left: 12, top: field.tag === 'textarea' ? 14 : '50%', transform: field.tag === 'textarea' ? 'none' : 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                      <field.icon size={16} style={{ position: 'absolute', left: 14, top: field.tag === 'textarea' ? 16 : '50%', transform: field.tag === 'textarea' ? 'none' : 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
                       {field.tag === 'textarea' ? (
                         <textarea
                           id={field.name}
                           {...register(field.name)}
                           onChange={e => { register(field.name).onChange(e); handleChange(field.name, e.target.value); }}
                           className={`form-input${errors[field.name] ? ' error' : ''}`}
-                          style={{ paddingLeft: 38, minHeight: 90, resize: 'vertical' }}
+                          style={{ paddingLeft: 42, minHeight: 100, resize: 'vertical' }}
                           placeholder={field.placeholder}
                         />
                       ) : (
@@ -296,32 +297,32 @@ export default function RegisterPage() {
                           {...register(field.name)}
                           onChange={e => { register(field.name).onChange(e); handleChange(field.name, e.target.value); }}
                           className={`form-input${errors[field.name] ? ' error' : ''}`}
-                          style={{ paddingLeft: 38 }}
+                          style={{ paddingLeft: 42 }}
                           placeholder={field.placeholder}
                         />
                       )}
                     </div>
-                    {errors[field.name] && <p className="form-error">{errors[field.name]?.message}</p>}
+                    {errors[field.name] && <p className="form-error">⚠️ {errors[field.name]?.message}</p>}
                     {field.name === 'pin_code' && geoLoading && (
-                      <p style={{ fontSize: '.78rem', color: 'var(--blue-600)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span className="spinner-inline" /> Auto-detecting location...
+                      <p style={{ fontSize: '.78rem', color: 'var(--primary-emerald)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600 }}>
+                        <span className="spinner-inline" /> Retrieving regional address...
                       </p>
                     )}
                     {field.name === 'pin_code' && geoError && (
-                      <p style={{ fontSize: '.78rem', color: '#d97706', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <p style={{ fontSize: '.78rem', color: '#c05c1e', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
                         ⚠️ {geoError}
                       </p>
                     )}
                     {field.hint && !errors[field.name] && (field.name !== 'pin_code' || (!geoLoading && !geoError)) && (
-                      <p style={{ fontSize: '.78rem', color: 'var(--text-muted)', marginTop: 3 }}>{field.hint}</p>
+                      <p style={{ fontSize: '.78rem', color: 'var(--text-light)', marginTop: 4, opacity: 0.85 }}>{field.hint}</p>
                     )}
                   </div>
                 ))}
               </div>
 
               {/* Notice */}
-              <div style={{ marginTop: '1.75rem', background: 'var(--blue-50)', border: '1px solid var(--blue-100)', borderRadius: 10, padding: '.875rem 1.125rem', fontSize: '.875rem', color: 'var(--blue-800)', lineHeight: 1.65 }}>
-                <strong>Note:</strong> After submission, your application enters a <strong>Pending Approval</strong> state. An admin will review it within 24 hours. Track status using your registered mobile number.
+              <div style={{ marginTop: '2rem', background: 'var(--success-bg)', border: '1px solid var(--success-bdr)', borderRadius: 12, padding: '1.15rem', fontSize: '.9rem', color: 'var(--success)', lineHeight: 1.6 }}>
+                <strong>FPO Membership Terms:</strong> By submitting, you apply to the Kayaka Sampada FPO administrative committee. Verification completes in 24 hours. Track status using your mobile number.
               </div>
 
               <button
@@ -329,59 +330,72 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={loading}
                 className="btn btn-primary btn-lg"
-                style={{ width: '100%', marginTop: '1.75rem' }}
+                style={{ width: '100%', marginTop: '2rem' }}
               >
-                {loading ? <><div className="spinner" /> Submitting...</> : <><UserPlus size={19} /> Submit Registration</>}
+                {loading ? <><div className="spinner" /> Verification in progress...</> : <><UserPlus size={20} /> Register & Apply for Membership</>}
               </button>
             </form>
           </div>
         </motion.div>
       </div>
 
-      {/* ── Success Modal ───────────────────────────────────────── */}
+      {/* ── Success Modal (Bespoke FPO Paper Receipt) ───────────────────────────────────────── */}
       <AnimatePresence>
         {success && (
           <div className="modal-overlay">
             <motion.div
               className="modal-box"
-              initial={{ opacity: 0, scale: .88, y: 28 }}
+              initial={{ opacity: 0, scale: .92, y: 32 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: .9 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-              style={{ padding: '2.75rem 2.25rem', textAlign: 'center' }}
+              exit={{ opacity: 0, scale: .93 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              style={{ padding: 0, overflow: 'hidden' }}
             >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: .18, type: 'spring', stiffness: 400 }}
-                style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--success-bg)', border: '2.5px solid var(--success-bdr)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}
-              >
-                <CheckCircle size={34} color="var(--success)" />
-              </motion.div>
+              {/* Paper receipt container */}
+              <div className="receipt-card" style={{ margin: '1.5rem' }}>
+                {/* Stamp overlay */}
+                <div className="stamp-pending">Committee Review</div>
 
-              <h2 style={{ fontSize: '1.625rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '.75rem' }}>
-                Registration Submitted!
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '.975rem', lineHeight: 1.7 }}>
-                Your registration is submitted successfully and is <strong>waiting for admin approval</strong>.
-              </p>
-
-              <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 12, padding: '1.25rem', marginBottom: '1.5rem', textAlign: 'left' }}>
-                {[
-                  ['Registration ID', success.registration_id],
-                  ['Name', success.full_name],
-                  ['Submitted At', new Date(success.submitted_at).toLocaleString('en-IN')],
-                ].map(([l, v]) => (
-                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '.4rem 0', borderBottom: l !== 'Submitted At' ? '1px solid var(--border)' : 'none' }}>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '.875rem' }}>{l}</span>
-                    <span style={{ fontWeight: l === 'Registration ID' ? 800 : 600, color: l === 'Registration ID' ? 'var(--blue-700)' : 'var(--text-primary)', fontSize: l === 'Registration ID' ? '1rem' : '.9rem', letterSpacing: l === 'Registration ID' ? '.03em' : 0 }}>{v}</span>
+                {/* Header */}
+                <div style={{ textAlign: 'center', borderBottom: '2px dashed var(--border-sage)', paddingBottom: '1.5rem', marginBottom: '1.5rem' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto .75rem' }}>
+                    <CheckCircle size={24} color="var(--success)" />
                   </div>
-                ))}
-              </div>
+                  <h2 className="font-serif" style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--primary-forest)' }}>
+                    Membership Application Receipt
+                  </h2>
+                  <p style={{ fontSize: '.8rem', color: 'var(--text-light)', marginTop: 4, fontWeight: 600 }}>
+                    ಕಾಯಕ ಸಂಪಾದ ರೈತ ಉತ್ಪಾದಕ ಸಂಸ್ಥೆ
+                  </p>
+                </div>
 
-              <div style={{ display: 'flex', gap: '.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/status" className="btn btn-primary">Check Status</Link>
-                <Link href="/" className="btn btn-ghost">Back to Home</Link>
+                {/* Details */}
+                <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem', lineHeight: 1.6, marginBottom: '1.5rem', background: 'var(--surface-2)', padding: '1rem', borderRadius: 8 }}>
+                  Your application is filed securely. Please print or save this token. You will need your registered mobile number to check the committee approval status.
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem', marginBottom: '2rem' }}>
+                  {[
+                    ['Application ID', success.registration_id],
+                    ['Farmer Name', success.full_name],
+                    ['Filing Date', new Date(success.submitted_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })],
+                    ['Verification Stage', 'Pending FPO Board Review'],
+                  ].map(([l, v]) => (
+                    <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', paddingBottom: '.65rem', borderBottom: '1px solid rgba(18, 53, 36, 0.05)' }}>
+                      <span style={{ color: 'var(--text-light)', fontSize: '.84rem', fontWeight: 600 }}>{l}</span>
+                      <span style={{ fontWeight: l === 'Application ID' ? 800 : 700, color: l === 'Application ID' ? 'var(--primary-emerald)' : 'var(--text-primary)', fontSize: '.9rem', fontFamily: l === 'Application ID' ? 'monospace' : 'inherit' }}>{v}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Receipt Actions */}
+                <div style={{ display: 'flex', gap: '.85rem', justifyContent: 'center', flexWrap: 'wrap', borderTop: '2px dashed var(--border-sage)', paddingTop: '1.5rem' }} className="no-print">
+                  <button onClick={() => window.print()} className="btn btn-outline" style={{ display: 'flex', gap: 6 }}>
+                    <Printer size={16} /> Print Receipt
+                  </button>
+                  <Link href="/status" className="btn btn-primary">Check Approval Status</Link>
+                  <Link href="/" className="btn btn-ghost">Home</Link>
+                </div>
               </div>
             </motion.div>
           </div>

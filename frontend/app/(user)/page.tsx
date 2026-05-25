@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   FileText, UserPlus, Search, Clock, CheckCircle,
-  ChevronRight, Shield, Phone, MapPin, ArrowRight
+  Shield, Phone, MapPin, ArrowRight, Sprout, Wheat
 } from 'lucide-react';
 
 const steps = [
-  { num: '01', icon: FileText,    title: 'Fill the Form',   desc: 'Enter your personal details accurately in the registration form.' },
-  { num: '02', icon: UserPlus,    title: 'Submit',          desc: 'Submit securely. You receive a unique Registration ID instantly.' },
-  { num: '03', icon: Clock,       title: 'Under Review',    desc: 'Our admin team reviews your application within 24 hours.' },
-  { num: '04', icon: CheckCircle, title: 'Get Approved',    desc: 'Receive your approval. Use your ID for all future references.' },
+  { num: '01', icon: FileText,    title: 'Fill the Form',   desc: 'Enter your personal details and agricultural profile accurately.' },
+  { num: '02', icon: UserPlus,    title: 'Submit Application', desc: 'Securely submit. You will receive a unique Farmer Registration ID instantly.' },
+  { num: '03', icon: Clock,       title: 'FPO Verification',   desc: 'Our local administration committee reviews your member credentials.' },
+  { num: '04', icon: CheckCircle, title: 'Active Membership',  desc: 'Unlock direct market access, bulk seed/fertilizer subsidies, and rental equipment.' },
 ];
 
 export default function UserHomePage() {
@@ -18,98 +18,107 @@ export default function UserHomePage() {
     <>
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="user-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue-800),var(--blue-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <FileText size={18} color="#fff" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.85rem' }}>
+          <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg,var(--primary-forest),var(--primary-emerald))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(18,53,36,0.15)' }}>
+            <Sprout size={20} color="#fff" />
           </div>
           <div>
-            <p style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', lineHeight: 1.1 }}>Kayaka Sampada</p>
-            <p style={{ fontSize: '.7rem', color: 'var(--text-muted)', letterSpacing: '.03em' }}>Farmer Producer Organisation</p>
+            <p className="font-serif" style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)', lineHeight: 1.1 }}>
+              ಕಾಯಕ ಸಂಪಾದ <span style={{ fontSize: '.85rem', fontWeight: 500, color: 'var(--primary-emerald)' }}>FPO</span>
+            </p>
+            <p style={{ fontSize: '.7rem', color: 'var(--text-muted)', letterSpacing: '.04em', textTransform: 'uppercase', fontWeight: 600 }}>Farmer Producer Organisation</p>
           </div>
         </div>
-        <nav style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
-          <Link href="/status" style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary)', fontWeight: 500, textDecoration: 'none', fontSize: '.9rem', padding: '.4rem .8rem', borderRadius: 8, transition: 'background .2s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+        <nav style={{ display: 'flex', gap: '.85rem', alignItems: 'center' }}>
+          <Link href="/status" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontWeight: 600, textDecoration: 'none', fontSize: '.9rem', padding: '.45rem .9rem', borderRadius: 'var(--r-sm)', transition: 'all .2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(18,53,36,0.04)'; e.currentTarget.style.color = 'var(--primary-forest)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}>
             <Search size={15} /> Check Status
           </Link>
           <Link href="/register" className="btn btn-primary btn-sm">
-            Register Now
+            Join FPO
           </Link>
         </nav>
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="user-hero" style={{ padding: 'clamp(3rem, 8vw, 6rem) 1.5rem', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative circles */}
-        <div style={{ position: 'absolute', top: -120, right: -80, width: 480, height: 480, borderRadius: '50%', background: 'rgba(255,255,255,.04)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -80, left: -60, width: 320, height: 320, borderRadius: '50%', background: 'rgba(255,255,255,.03)', pointerEvents: 'none' }} />
+      <section className="user-hero" style={{ padding: 'clamp(4.5rem, 10vw, 7.5rem) 1.5rem', position: 'relative', overflow: 'hidden' }}>
+        {/* Organic decorative curves */}
+        <div style={{ position: 'absolute', top: -180, right: -100, width: 560, height: 560, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,152,25,0.09) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -120, left: -100, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(46,111,64,0.14) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 740, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.12)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,.18)', color: '#bfdbfe', padding: '.4rem 1rem', borderRadius: 99, fontSize: '.82rem', fontWeight: 600, marginBottom: '1.5rem', letterSpacing: '.03em' }}>
-              ✦ OFFICIAL REGISTRATION PORTAL
+        <div style={{ maxWidth: 840, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.09)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,.14)', color: '#fae8ff', padding: '.45rem 1.15rem', borderRadius: 99, fontSize: '.8rem', fontWeight: 700, marginBottom: '1.75rem', letterSpacing: '.05em', textTransform: 'uppercase' }}>
+              🌱 Official Member Enrollment Portal • ಕಾಯಕ ಸಂಪಾದ ಸಂಸ್ಥೆ
             </span>
 
-            <h1 style={{ fontSize: 'clamp(2rem, 5.5vw, 3.5rem)', fontWeight: 900, color: '#fff', lineHeight: 1.12, marginBottom: '1.25rem', letterSpacing: '-.02em' }}>
-              Register Online,
+            <h1 className="font-serif" style={{ fontSize: 'clamp(2.15rem, 5.8vw, 3.85rem)', fontWeight: 700, color: '#ffffff', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-.01em' }}>
+              Grow Your Farming Wealth
               <br />
-              <span style={{ color: '#93c5fd' }}>Track Your Status</span>
+              <span style={{ color: 'var(--accent-amber)' }}>Register to Join Our FPO Collective</span>
             </h1>
 
-            <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.175rem)', color: 'rgba(255,255,255,.75)', marginBottom: '2.5rem', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 2.5rem' }}>
-              Submit your registration in minutes. Our admin team reviews and approves applications promptly. Track your status anytime using your phone number.
+            <p style={{ fontSize: 'clamp(1rem, 2.3vw, 1.15rem)', color: 'rgba(255,255,255,.82)', marginBottom: '2.75rem', lineHeight: 1.75, maxWidth: 620, margin: '0 auto 2.75rem' }}>
+              Access direct crop sell-back networks, expert agronomy guidance, and government schemes. Enter your details and track verification instantly.
             </p>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/register" className="btn btn-lg" style={{ background: '#fff', color: 'var(--blue-800)', boxShadow: '0 8px 30px rgba(0,0,0,.2)', gap: 8 }}>
-                <UserPlus size={20} /> Start Registration
+            <div style={{ display: 'flex', gap: '1.15rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/register" className="btn btn-lg btn-accent" style={{ color: '#fff', gap: 8 }}>
+                <Wheat size={20} /> Register Online (ಸದಸ್ಯರಾಗಿ)
               </Link>
-              <Link href="/status" className="btn btn-lg" style={{ background: 'rgba(255,255,255,.12)', color: '#fff', border: '1.5px solid rgba(255,255,255,.25)', backdropFilter: 'blur(12px)', gap: 8 }}>
-                <Search size={20} /> Check My Status
+              <Link href="/status" className="btn btn-lg" style={{ background: 'rgba(255,255,255,.08)', color: '#fff', border: '1.5px solid rgba(255,255,255,0.18)', backdropFilter: 'blur(12px)', gap: 8 }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}>
+                <Search size={20} /> Track My Status
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Trust bar ──────────────────────────────────────────── */}
-      <section style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.25rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center' }}>
-          {[['Secure Portal', 'SSL Secured'], ['Review Time', '< 24 hrs'], ['Availability', '24 / 7']].map(([label, val]) => (
-            <div key={label}>
-              <p style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--blue-800)' }}>{val}</p>
-              <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: 2 }}>{label}</p>
+      {/* ── Genuine FPO Trust Bar ─────────────────────────────── */}
+      <section style={{ background: '#ffffff', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '1.5rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
+          {[
+            ['NABARD Assisted FPO', 'National Bank Support'],
+            ['5,000+ Local Farmers', 'Strong Cooperative Network'],
+            ['Direct Market Buybacks', 'Fair Minimum Pricing Support']
+          ].map(([label, val]) => (
+            <div key={label} style={{ padding: '.5rem 1rem' }}>
+              <p className="font-serif" style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--primary-forest)' }}>{label}</p>
+              <p style={{ fontSize: '.84rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '.02em' }}>{val}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── How it works ───────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(3rem, 6vw, 5rem) 1.5rem' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '.625rem' }}>How It Works</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem' }}>Simple 4-step process — from submission to approval.</p>
+      <section style={{ padding: 'clamp(4.5rem, 8vw, 6.5rem) 1.5rem' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <span style={{ color: 'var(--primary-emerald)', fontWeight: 800, fontSize: '.84rem', textTransform: 'uppercase', letterSpacing: '.08em' }}>Simple Integration Flow</span>
+            <h2 className="font-serif" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', fontWeight: 700, color: 'var(--text-primary)', marginTop: '.5rem', marginBottom: '.75rem' }}>How FPO Membership Works</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: 540, margin: '0 auto' }}>Join the collective in 4 straightforward steps and unlock member facilities.</p>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.75rem' }}>
             {steps.map((s, i) => (
               <motion.div
                 key={s.num}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="card"
-                style={{ padding: '1.75rem', textAlign: 'center', transition: 'box-shadow .2s, transform .2s', position: 'relative', overflow: 'hidden' }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; }}
+                className="card card-textured"
+                style={{ padding: '2rem 1.75rem', transition: 'all .25s ease' }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--primary-sage)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = ''; }}
               >
-                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, var(--blue-800), var(--blue-500))', color: '#fff', fontWeight: 800, fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.125rem' }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(46,111,64,0.07)', color: 'var(--primary-emerald)', fontWeight: 800, fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
                   {s.num}
                 </div>
-                <h3 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '.5rem' }}>{s.title}</h3>
+                <h3 className="font-serif" style={{ fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', marginBottom: '.625rem' }}>{s.title}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem', lineHeight: 1.65 }}>{s.desc}</p>
               </motion.div>
             ))}
@@ -117,66 +126,79 @@ export default function UserHomePage() {
         </div>
       </section>
 
-      {/* ── Info cards ─────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: 'clamp(2rem, 5vw, 4rem) 1.5rem', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
-          {[
-            { icon: MapPin, title: 'What Info Is Needed?', desc: 'Full name, parent/spouse name, address, area, PIN code, taluk, district, phone number, and email (optional).' },
-            { icon: Phone, title: 'Track Your Registration', desc: 'Use your registered phone number at any time on the Status page to check if your application is pending, approved, or rejected.' },
-            { icon: Shield, title: 'Secure & Private', desc: 'Your personal data is encrypted and stored securely. Only authorised admin staff can access your registration details.' },
-          ].map(({ icon: Icon, title, desc }) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}
-            >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--blue-50)', border: '1px solid var(--blue-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon size={20} color="var(--blue-700)" />
-              </div>
-              <div>
-                <h3 style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '.375rem', fontSize: '.975rem' }}>{title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem', lineHeight: 1.65 }}>{desc}</p>
-              </div>
-            </motion.div>
-          ))}
+      {/* ── Info Cards (Custom & Localized) ────────────────────── */}
+      <section style={{ background: '#ffffff', padding: 'clamp(3.5rem, 7vw, 5.5rem) 1.5rem', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem' }}>
+            {[
+              { icon: Sprout, title: 'Why Register with Kayaka Sampada?', desc: 'Members get bulk seeds, organic fertilizers at discounted rates, shared combine harvesters, and direct linkages to cold chain storages.' },
+              { icon: Phone, title: 'Instant Application Tracking', desc: 'Verify your membership anytime. Use your mobile number to view status updates, official verification remarks, and dynamic certificates.' },
+              { icon: Shield, title: 'Farmer Privacy & Protection', desc: 'Your crop yields and personal data are safely managed. We store registrations under strict national agricultural portal compliance guidelines.' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}
+              >
+                <div style={{ width: 46, height: 46, borderRadius: 14, background: 'rgba(46,111,64,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Icon size={20} color="var(--primary-emerald)" />
+                </div>
+                <div>
+                  <h3 className="font-serif" style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '.5rem', fontSize: '1.1rem' }}>{title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '.92rem', lineHeight: 1.65 }}>{desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── CTA ────────────────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(3rem, 6vw, 5rem) 1.5rem', textAlign: 'center' }}>
+      <section style={{ padding: 'clamp(4.5rem, 8vw, 6.5rem) 1.5rem', textAlign: 'center' }}>
         <motion.div
-          initial={{ opacity: 0, scale: .97 }}
+          initial={{ opacity: 0, scale: .98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="user-hero"
-          style={{ maxWidth: 640, margin: '0 auto', borderRadius: 'var(--r-xl)', padding: '3rem 2rem', position: 'relative', overflow: 'hidden' }}
+          style={{ maxWidth: 800, margin: '0 auto', borderRadius: 'var(--r-xl)', padding: '4rem 2rem', position: 'relative', overflow: 'hidden' }}
         >
-          <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,.06)' }} />
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 900, color: '#fff', marginBottom: '1rem' }}>Ready to Register?</h2>
-          <p style={{ color: 'rgba(255,255,255,.78)', marginBottom: '2rem', fontSize: '1.05rem' }}>
-            Takes less than 5 minutes. Fill in your details and submit securely online.
+          <div style={{ position: 'absolute', top: -80, right: -80, width: 280, height: 280, borderRadius: '50%', background: 'rgba(255,255,255,.05)' }} />
+          <span style={{ color: 'var(--accent-amber)', fontSize: '.84rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.08em', display: 'block', marginBottom: '.75rem' }}>Start Today</span>
+          <h2 className="font-serif" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.35rem)', fontWeight: 700, color: '#ffffff', marginBottom: '1.25rem' }}>Ready to Secure Your Membership?</h2>
+          <p style={{ color: 'rgba(255,255,255,.8)', marginBottom: '2.5rem', fontSize: '1.08rem', maxWidth: 520, margin: '0 auto 2.5rem', lineHeight: 1.75 }}>
+            It takes just a few minutes to submit your details. Support our rural cooperative ecosystem.
           </p>
-          <Link href="/register" className="btn btn-lg" style={{ background: '#fff', color: 'var(--blue-800)', display: 'inline-flex', gap: 8 }}>
-            Start Registration <ArrowRight size={18} />
+          <Link href="/register" className="btn btn-lg btn-accent" style={{ color: '#fff', display: 'inline-flex', gap: 8 }}>
+            Start Member Registration <ArrowRight size={18} />
           </Link>
         </motion.div>
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────── */}
       <footer className="user-footer">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: '.625rem' }}>
-          <FileText size={16} color="var(--blue-400)" />
-          <span style={{ color: '#fff', fontWeight: 700 }}>Kayaka Sampada</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: '1rem' }}>
+          <Sprout size={18} color="var(--accent-amber)" />
+          <span className="font-serif" style={{ color: '#ffffff', fontWeight: 700, fontSize: '1.15rem' }}>ಕಾಯಕ ಸಂಪಾದ ಸಂಸ್ಥೆ</span>
         </div>
-        <p>© {new Date().getFullYear()} Kayaka Sampada Farmer Producer Organisation. All rights reserved.</p>
-        <div style={{ marginTop: '.75rem', display: 'flex', gap: '1.25rem', justifyContent: 'center' }}>
-          <Link href="/register" style={{ color: 'rgba(255,255,255,.45)', textDecoration: 'none', fontSize: '.82rem' }}>Register</Link>
-          <Link href="/status" style={{ color: 'rgba(255,255,255,.45)', textDecoration: 'none', fontSize: '.82rem' }}>Check Status</Link>
-          <Link href="/admin/login" style={{ color: 'rgba(255,255,255,.45)', textDecoration: 'none', fontSize: '.82rem' }}>Admin Login</Link>
+        <p style={{ fontSize: '.84rem', opacity: .8, maxWidth: 540, margin: '0 auto .75rem', lineHeight: 1.65 }}>
+          Kayaka Sampada Farmer Producer Organisation (FPO) collective. Empowering farmers with technology and collaborative growth networks.
+        </p>
+        <p style={{ fontSize: '.78rem', opacity: .4 }}>© {new Date().getFullYear()} Kayaka Sampada FPO. All rights reserved.</p>
+        <div style={{ marginTop: '1.75rem', display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+          <Link href="/register" style={{ color: 'rgba(255,255,255,.45)', textDecoration: 'none', fontSize: '.82rem', fontWeight: 600 }}
+            onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.45)'}>Register</Link>
+          <Link href="/status" style={{ color: 'rgba(255,255,255,.45)', textDecoration: 'none', fontSize: '.82rem', fontWeight: 600 }}
+            onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.45)'}>Check Status</Link>
+          <Link href="/admin/login" style={{ color: 'rgba(255,255,255,.3)', textDecoration: 'none', fontSize: '.82rem', fontWeight: 600 }}
+            onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.3)'}>Admin Login</Link>
         </div>
       </footer>
     </>
   );
 }
+
