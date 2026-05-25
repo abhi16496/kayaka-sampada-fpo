@@ -1,7 +1,11 @@
 import { Pool, QueryResult } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const connectionString = process.env.DATABASE_URL;
+// Sanitize connection string to prevent trailing whitespace/semicolons from corrupting connection options
+const connectionString = process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== ''
+  ? process.env.DATABASE_URL.trim()
+  : undefined;
+
 const dbSsl = process.env.DB_SSL === 'true';
 
 const poolOptions = connectionString
@@ -35,7 +39,7 @@ export const testConnection = async (): Promise<void> => {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         last_login TIMESTAMP WITH TIME ZONE
       )
-    `);
+    `.trim());
 
     // 2. Create Registrations table
     await client.query(`
@@ -60,14 +64,14 @@ export const testConnection = async (): Promise<void> => {
         rejection_reason TEXT,
         notes TEXT
       )
-    `);
+    `.trim());
 
     // Self-healing: add columns state and country if they don't exist
     await client.query(`
       ALTER TABLE registrations 
       ADD COLUMN IF NOT EXISTS state TEXT,
       ADD COLUMN IF NOT EXISTS country TEXT
-    `);
+    `.trim());
 
     // 3. Create Activity Logs table
     await client.query(`
@@ -79,7 +83,7 @@ export const testConnection = async (): Promise<void> => {
         details TEXT,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
-    `);
+    `.trim());
 
     // 4. Seed default admin (Admin@123) if it doesn't exist
     const hash = bcrypt.hashSync('Admin@123', 12);
@@ -87,7 +91,7 @@ export const testConnection = async (): Promise<void> => {
       INSERT INTO admins (id, username, email, password_hash)
       VALUES ($1, $2, $3, $4)
       ON CONFLICT (username) DO NOTHING
-    `, ['admin-uuid-1', 'admin', 'admin@registrationapp.com', hash]);
+    `.trim(), ['admin-uuid-1', 'admin', 'admin@registrationapp.com', hash]);
 
     console.log('✅ PostgreSQL Database connected and initialized');
   } catch (error) {
@@ -104,7 +108,7 @@ const customPool = {
     let index = 1;
     // Replace "?" with "$1", "$2", etc.
     const pgText = text.replace(/\?/g, () => `$${index++}`);
-    return pool.query(pgText, params);
+    return pool.query(pgText.trim(), params);
   },
   connect: () => pool.connect(),
   end: () => pool.end(),
