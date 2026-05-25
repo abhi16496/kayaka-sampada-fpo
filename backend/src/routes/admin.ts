@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import pool from '../models/db';
 import { authenticateAdmin, AuthRequest } from '../middleware/auth';
+import { sendApprovalEmail } from '../utils/ses';
 
 const router = Router();
 
@@ -167,6 +168,17 @@ router.put('/registrations/:id/approve', async (req: AuthRequest, res: Response)
       'INSERT INTO activity_logs (id, admin_id, action, registration_id, details) VALUES (?, ?, ?, ?, ?)',
       [uuidv4(), req.admin!.id, 'approve', id, `Approved registration ${reg.registration_id}`]
     );
+
+    // Send email notification asynchronously in a non-blocking, fail-safe manner
+    if (reg.email) {
+      console.log(`[Email Notification] Triggering SES email send for: ${reg.email}`);
+      sendApprovalEmail(reg.email, reg.full_name, reg.registration_id)
+        .catch(err => {
+          console.error(`[Email Notification Error] Error sending email to ${reg.email}:`, err);
+        });
+    } else {
+      console.log(`[Email Notification] No email address found for registration: ${reg.registration_id}`);
+    }
 
     res.json({ message: 'Registration approved successfully', registration: { ...reg, status: 'approved' } });
   } catch (err) {
