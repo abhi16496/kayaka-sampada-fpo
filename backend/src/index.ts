@@ -1,17 +1,17 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth';
 import registrationRoutes from './routes/registrations';
 import adminRoutes from './routes/admin';
 import geocodeRoutes from './routes/geocode';
 import { testConnection } from './models/db';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || (process.env.PORT && process.env.PORT !== '3000' ? process.env.PORT : 5000);

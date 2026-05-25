@@ -1,27 +1,38 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
-// Retrieve values from process.env
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-const region = process.env.AWS_REGION || 'us-east-1';
-const senderEmail = process.env.AWS_SES_SENDER || 'no-reply@kayakasampadafpo.org';
-
 let sesClient: SESClient | null = null;
 
-if (accessKeyId && secretAccessKey) {
-  sesClient = new SESClient({
-    region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-  });
-} else {
+function getSESClient(): { client: SESClient | null; senderEmail: string } {
+  const senderEmail = process.env.AWS_SES_SENDER || 'no-reply@kayakasampadafpo.org';
+  
+  if (sesClient) {
+    return { client: sesClient, senderEmail };
+  }
+
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const region = process.env.AWS_REGION || 'us-east-1';
+
+  if (accessKeyId && secretAccessKey) {
+    sesClient = new SESClient({
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+    });
+    console.log('✅ AWS SES Client initialized successfully.');
+    return { client: sesClient, senderEmail };
+  }
+
   console.warn('⚠️ AWS SES credentials are not configured in environment variables. Email notifications will be mocked.');
+  return { client: null, senderEmail };
 }
 
 export async function sendApprovalEmail(recipientEmail: string, fullName: string, regId: string): Promise<void> {
-  if (!sesClient) {
+  const { client: clientToUse, senderEmail } = getSESClient();
+
+  if (!clientToUse) {
     console.log(`[EMAIL MOCK] Would send approval email to ${recipientEmail} with RegID: ${regId} (AWS credentials missing)`);
     return;
   }
@@ -235,7 +246,7 @@ Kayaka Sampada FPO
       },
     });
 
-    const response = await sesClient.send(command);
+    const response = await clientToUse.send(command);
     console.log(`✅ AWS SES approval email successfully sent to ${recipientEmail}. MessageId: ${response.MessageId}`);
   } catch (error: any) {
     console.error(`❌ Failed to send AWS SES approval email to ${recipientEmail}:`, error);
