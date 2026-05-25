@@ -19,7 +19,7 @@ router.get('/dashboard', async (req: AuthRequest, res: Response): Promise<void> 
         SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
         SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
         SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) AS rejected,
-        SUM(CASE WHEN submitted_at >= datetime('now', '-1 day') THEN 1 ELSE 0 END) AS today
+        SUM(CASE WHEN submitted_at >= NOW() - INTERVAL '1 day' THEN 1 ELSE 0 END) AS today
       FROM registrations
     `);
 
@@ -36,10 +36,10 @@ router.get('/dashboard', async (req: AuthRequest, res: Response): Promise<void> 
 
     // Daily registrations for chart (last 7 days)
     const chartData = await pool.query(`
-      SELECT DATE(submitted_at) AS date, COUNT(*) AS count
+      SELECT CAST(submitted_at AS DATE) AS date, COUNT(*) AS count
       FROM registrations
-      WHERE submitted_at >= datetime('now', '-7 days')
-      GROUP BY DATE(submitted_at)
+      WHERE submitted_at >= NOW() - INTERVAL '7 days'
+      GROUP BY CAST(submitted_at AS DATE)
       ORDER BY date
     `);
 
@@ -78,7 +78,7 @@ router.get('/registrations', async (req: AuthRequest, res: Response): Promise<vo
   if (search) {
     params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
     conditions.push(
-      `(full_name LIKE ? OR phone LIKE ? OR registration_id LIKE ? OR district LIKE ?)`
+      `(full_name ILIKE ? OR phone ILIKE ? OR registration_id ILIKE ? OR district ILIKE ?)`
     );
   }
 
