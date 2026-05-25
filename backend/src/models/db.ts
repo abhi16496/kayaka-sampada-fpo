@@ -2,8 +2,7 @@ import { Pool, QueryResult } from 'pg';
 import bcrypt from 'bcryptjs';
 
 const connectionString = process.env.DATABASE_URL;
-const isProduction = process.env.NODE_ENV === 'production';
-const dbSsl = process.env.DB_SSL === 'true' || (isProduction && !connectionString?.includes('localhost') && !connectionString?.includes('127.0.0.1'));
+const dbSsl = process.env.DB_SSL === 'true';
 
 const poolOptions = connectionString
   ? {
