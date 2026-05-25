@@ -141,12 +141,12 @@ export async function sendApprovalEmail(recipientEmail: string, fullName: string
     
     <div class="content">
       <!-- English Section -->
-      <div class="welcome">Dear \${fullName},</div>
+      <div class="welcome">Dear ${fullName},</div>
       <p>We are delighted to inform you that your membership application for <strong>Kayaka Sampada Farmer Producer Organisation (FPO)</strong> has been successfully reviewed and approved by our administrative committee! Welcome to our growing agricultural family.</p>
       
       <div class="card">
         <div class="card-title">Your Unique Member Registration ID</div>
-        <div class="reg-id">\${regId}</div>
+        <div class="reg-id">${regId}</div>
       </div>
       
       <div class="section-title">Exclusive Member Benefits</div>
@@ -161,12 +161,12 @@ export async function sendApprovalEmail(recipientEmail: string, fullName: string
       <div class="bilingual-divider"></div>
 
       <!-- Kannada Section -->
-      <div class="welcome" style="font-family: inherit;">ಆತ್ಮೀಯ \${fullName},</div>
+      <div class="welcome" style="font-family: inherit;">ಆತ್ಮೀಯ ${fullName},</div>
       <p>ನಮ್ಮ ಆಡಳಿತ ಸಮಿತಿಯಿಂದ <strong>ಕಾಯಕ ಸಂಪದ ರೈತ ಉತ್ಪಾದಕ ಸಂಸ್ಥೆಯ (FPO)</strong> ನಿಮ್ಮ ಸದಸ್ಯತ್ವ ಅರ್ಜಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪರಿಶೀಲಿಸಿ ಅನುಮೋದಿಸಲಾಗಿದೆ ಎಂದು ತಿಳಿಸಲು ನಾವು ಸಂತೋಷಪಡುತ್ತೇವೆ! ನಮ್ಮ ಬೆಳೆಯುತ್ತಿರುವ ಕೃಷಿ ಕುಟುಂಬಕ್ಕೆ ಆತ್ಮೀಯ ಸ್ವಾಗತ.</p>
       
       <div class="card">
         <div class="card-title">ನಿಮ್ಮ ವಿಶಿಷ್ಟ ಸದಸ್ಯತ್ವ ನೋಂದಣಿ ಐಡಿ (Registration ID)</div>
-        <div class="reg-id">\${regId}</div>
+        <div class="reg-id">${regId}</div>
       </div>
       
       <div class="section-title">ಸದಸ್ಯರ ವಿಶೇಷ ಸೌಲಭ್ಯಗಳು</div>
@@ -191,19 +191,19 @@ export async function sendApprovalEmail(recipientEmail: string, fullName: string
   `;
 
   const textBody = `
-Dear \${fullName},
+Dear ${fullName},
 
 We are delighted to inform you that your membership application for Kayaka Sampada Farmer Producer Organisation (FPO) has been approved!
 
-Your Unique Member Registration ID: \${regId}
+Your Unique Member Registration ID: ${regId}
 
 ---
 
-ಆತ್ಮೀಯ \${fullName},
+ಆತ್ಮೀಯ ${fullName},
 
 ಕಾಯಕ ಸಂಪದ ರೈತ ಉತ್ಪಾದಕ ಸಂಸ್ಥೆಯ (FPO) ನಿಮ್ಮ ಸದಸ್ಯತ್ವ ಅರ್ಜಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪರಿಶೀಲಿಸಿ ಅನುಮೋದಿಸಲಾಗಿದೆ!
 
-ನಿಮ್ಮ ವಿಶಿಷ್ಟ ಸದಸ್ಯತ್ವ ನೋಂದಣಿ ಐಡಿ: \${regId}
+ನಿಮ್ಮ ವಿಶಿಷ್ಟ ಸದಸ್ಯತ್ವ ನೋಂದಣಿ ಐಡಿ: ${regId}
 
 ---
 Warm regards / ಆತ್ಮೀಯ ಗೌರವಗಳೊಂದಿಗೆ,
@@ -236,12 +236,12 @@ Kayaka Sampada FPO
     });
 
     const response = await sesClient.send(command);
-    console.log(`✅ AWS SES approval email successfully sent to \${recipientEmail}. MessageId: \${response.MessageId}`);
+    console.log(`✅ AWS SES approval email successfully sent to ${recipientEmail}. MessageId: ${response.MessageId}`);
   } catch (error: any) {
-    console.error(`❌ Failed to send AWS SES approval email to \${recipientEmail}:`, error);
+    console.error(`❌ Failed to send AWS SES approval email to ${recipientEmail}:`, error);
     // Explicit warning about sandbox error for debugging
     if (error.name === 'MessageRejected') {
-      console.error(`💡 Note: If you are in the AWS SES Sandbox, both the sender (\${senderEmail}) and recipient (\${recipientEmail}) must be verified in the AWS SES Console.`);
+      console.error(`💡 Note: If you are in the AWS SES Sandbox, both the sender (${senderEmail}) and recipient (${recipientEmail}) must be verified in the AWS SES Console.`);
     }
   }
 }
