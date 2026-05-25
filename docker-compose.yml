@@ -14,14 +14,13 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production-please}
       JWT_EXPIRES_IN: 8h
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      # Database connection
+      DATABASE_URL: ${DATABASE_URL}
       # AWS SES — email notifications on admin approval
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION:-us-east-1}
       AWS_SES_SENDER: ${AWS_SES_SENDER:-no-reply@kayakasampadafpo.org}
-    volumes:
-      # Named persistent volume for SQLite database — survives container restarts and redeploys
-      - sqlite_data:/app/backend/data
     ports:
       - "5000:5000"
     networks:
@@ -43,11 +42,6 @@ services:
       - "3000:3000"
     networks:
       - kayaka-sampada-net
-
-volumes:
-  # Persistent named volume for the SQLite database file
-  sqlite_data:
-    driver: local
 
 networks:
   kayaka-sampada-net:

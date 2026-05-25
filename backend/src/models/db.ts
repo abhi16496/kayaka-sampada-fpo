@@ -1,111 +1,100 @@
-import sqlite3 from 'sqlite3';
-import bcrypt from 'bcryptjs';
+import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 
-// Store database in a dedicated /data directory so it can be mounted
-// as a persistent Docker volume — prevents data loss on container restarts/redeploys.
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-const DB_PATH = path.join(DATA_DIR, 'database.sqlite');
+const connectionString = process.env.DATABASE_URL;
 
-// Initialize SQLite database at the persistent path
-const db = new (sqlite3.verbose()).Database(DB_PATH);
-
-export const testConnection = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      // Admins table
-      db.run(`CREATE TABLE IF NOT EXISTS admins (
-        id TEXT PRIMARY KEY,
-        username TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL,
-        email TEXT UNIQUE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_login DATETIME
-      )`);
-
-      // Registrations table
-      db.run(`CREATE TABLE IF NOT EXISTS registrations (
-        id TEXT PRIMARY KEY,
-        registration_id TEXT UNIQUE NOT NULL,
-        full_name TEXT NOT NULL,
-        parent_spouse_name TEXT NOT NULL,
-        full_address TEXT NOT NULL,
-        area_village TEXT NOT NULL,
-        pin_code TEXT NOT NULL,
-        taluk TEXT NOT NULL,
-        district TEXT NOT NULL,
-        state TEXT,
-        country TEXT,
-        phone TEXT UNIQUE NOT NULL,
-        email TEXT,
-        status TEXT NOT NULL DEFAULT 'pending',
-        submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        reviewed_at DATETIME,
-        reviewed_by TEXT,
-        rejection_reason TEXT,
-        notes TEXT
-      )`);
-
-      // Run self-healing columns update for existing databases
-      db.run(`ALTER TABLE registrations ADD COLUMN state TEXT`, () => {});
-      db.run(`ALTER TABLE registrations ADD COLUMN country TEXT`, () => {});
-
-
-      // Activity Logs table
-      db.run(`CREATE TABLE IF NOT EXISTS activity_logs (
-        id TEXT PRIMARY KEY,
-        admin_id TEXT,
-        action TEXT NOT NULL,
-        registration_id TEXT,
-        details TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )`);
-
-      // Seed default admin (Admin@123)
-      const hash = bcrypt.hashSync('Admin@123', 12);
-      db.run(
-        `INSERT OR IGNORE INTO admins (id, username, email, password_hash) VALUES (?, ?, ?, ?)`,
-        ['admin-uuid-1', 'admin', 'admin@registrationapp.com', hash]
-      );
-
-      console.log('✅ SQLite Database connected and initialized');
-      resolve();
-    });
-  });
+const isLocalHost = (host?: string): boolean => {
+  if (!host) return false;
+  return host.includes('localhost') || host.includes('127.0.0.1');
 };
 
-// Mock `pg` Pool interface
-const pool = {
-  query: (text: string, params?: any[]): Promise<{ rows: any[], rowCount: number }> => {
-    return new Promise((resolve, reject) => {
-      // Convert Postgres syntax to SQLite syntax
-      let sqliteText = text
-        .replace(/\$\d+/g, '?')
-        .replace(/NOW\(\)/g, "CURRENT_TIMESTAMP")
-        .replace(/ILIKE/g, "LIKE");
-
-      // Handle RETURNING id (SQLite only returns id of inserted row via this.lastID if it's rowid,
-      // but newer SQLite supports RETURNING. Let's just use RETURNING since Node 18+ SQLite3 supports it)
-      const isSelect = sqliteText.trim().toUpperCase().startsWith('SELECT');
-      const isReturning = sqliteText.toUpperCase().includes('RETURNING');
-
-      if (isSelect || isReturning) {
-        db.all(sqliteText, params || [], function(err, rows) {
-          if (err) return reject(err);
-          resolve({ rows: rows || [], rowCount: rows?.length || 0 });
-        });
-      } else {
-        db.run(sqliteText, params || [], function(err) {
-          if (err) return reject(err);
-          resolve({ rows: [], rowCount: this.changes });
-        });
-      }
+const pool = connectionString 
+  ? new Pool({
+      connectionString,
+      ssl: connectionString.includes('localhost') || connectionString.includes('127.0.0.1')
+        ? false 
+        : { rejectUnauthorized: false }
+    })
+  : new Pool({
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'registration_db',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+      ssl: isLocalHost(process.env.DB_HOST)
+        ? false 
+        : { rejectUnauthorized: false }
     });
+
+export const testConnection = async (): Promise<void> => {
+  try {
+    const client = await pool.connect();
+    console.log('✅ PostgreSQL connected');
+    
+    // Check if the 'admins' table exists to decide if we need initialization
+    const tableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'admins'
+      );
+    `);
+    
+    const tableExists = tableCheck.rows[0]?.exists;
+    
+    if (!tableExists) {
+      console.log('🔄 PostgreSQL "admins" table not found. Initializing database schema...');
+      
+      const pathsToTry = [
+        path.join(__dirname, '..', '..', '..', 'database', 'schema.sql'),
+        path.join(__dirname, '..', '..', 'database', 'schema.sql'),
+        path.join(process.cwd(), 'database', 'schema.sql'),
+        path.join(process.cwd(), '..', 'database', 'schema.sql')
+      ];
+      
+      let schemaSql = '';
+      for (const p of pathsToTry) {
+        if (fs.existsSync(p)) {
+          schemaSql = fs.readFileSync(p, 'utf8');
+          console.log(`📖 Loaded schema from: ${p}`);
+          break;
+        }
+      }
+      
+      if (schemaSql) {
+        // Execute the schema SQL
+        await client.query(schemaSql);
+        console.log('✅ Database schema initialized successfully');
+      } else {
+        console.warn('⚠️ Could not locate database/schema.sql to auto-initialize the database.');
+      }
+    } else {
+      console.log('✅ Database tables already initialized.');
+    }
+    
+    client.release();
+  } catch (error) {
+    console.error('❌ Failed to connect or initialize PostgreSQL database:', error);
+    throw error;
   }
 };
 
-export default pool;
+// Custom query wrapper to convert SQLite-style '?' placeholders to standard Postgres '$1, $2...' placeholders
+const poolWrapper = {
+  query: (text: string, params?: any[]): Promise<{ rows: any[], rowCount: number }> => {
+    let pgText = text;
+    if (params && params.length > 0) {
+      let index = 1;
+      // Replace only "?" characters that are not inside quotes.
+      // Since our queries don't have "?" inside quoted string literals, we can do a simple global replace.
+      pgText = text.replace(/\?/g, () => `$${index++}`);
+    }
+    return pool.query(pgText, params).then(result => ({
+      rows: result.rows || [],
+      rowCount: result.rowCount ?? 0
+    }));
+  }
+};
+
+export default poolWrapper;

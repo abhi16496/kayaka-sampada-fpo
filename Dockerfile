@@ -36,17 +36,10 @@ RUN npm install -g concurrently
 # Copy Backend production assets
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN apk add --no-cache libstdc++ \
-    && apk add --no-cache --virtual .build-deps python3 make g++ \
+RUN apk add --no-cache --virtual .build-deps python3 make g++ \
     && npm ci --omit=dev \
     && apk del .build-deps
 COPY --from=backend-builder /app/backend/dist ./dist
-
-# Create a dedicated data directory for the SQLite database.
-# Declaring it as VOLUME ensures Docker mounts it as a persistent
-# named volume — data survives container restarts and redeploys.
-RUN mkdir -p /app/backend/data
-VOLUME ["/app/backend/data"]
 
 # Copy Frontend production assets
 WORKDIR /app/frontend
