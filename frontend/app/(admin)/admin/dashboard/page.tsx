@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                     <div key={i} style={{ display: 'flex', gap: '.75rem', marginBottom: '.75rem', paddingBottom: '.75rem', borderBottom: i < 7 ? '1px solid var(--border)' : 'none' }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: log.action === 'approve' ? 'var(--success)' : log.action === 'reject' ? 'var(--danger)' : 'var(--blue-500)', flexShrink: 0, marginTop: 6 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: '.84rem', color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.details}</p>
+                        <p style={{ fontSize: '.84rem', color: 'var(--text-primary)', fontWeight: 500, wordBreak: 'break-word' }}>{log.details}</p>
                         <p style={{ fontSize: '.75rem', color: 'var(--text-muted)', marginTop: 1 }}>
                           {log.admin_name} · {new Date(log.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                         </p>
@@ -589,10 +589,10 @@ export default function AdminDashboard() {
                           {log.action}
                         </span>
                       </td>
-                      <td style={{ fontWeight: 600 }}>{log.admin_name}</td>
-                      <td style={{ fontFamily: 'monospace', color: 'var(--blue-700)', fontSize: '.84rem' }}>{log.registration_id || '—'}</td>
-                      <td style={{ color: 'var(--text-secondary)', maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{log.details}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '.84rem', whiteSpace: 'nowrap' }}>{new Date(log.created_at).toLocaleString('en-IN')}</td>
+                      <td style={{ fontWeight: 600, verticalAlign: 'top' }}>{log.admin_name}</td>
+                      <td style={{ fontFamily: 'monospace', color: 'var(--blue-700)', fontSize: '.84rem', verticalAlign: 'top' }}>{log.registration_id || '—'}</td>
+                      <td style={{ color: 'var(--text-secondary)', maxWidth: 400, wordBreak: 'break-word', whiteSpace: 'pre-wrap', verticalAlign: 'top' }}>{log.details}</td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: '.84rem', whiteSpace: 'nowrap', verticalAlign: 'top' }}>{new Date(log.created_at).toLocaleString('en-IN')}</td>
                     </tr>
                   ))}
                   {logs.length === 0 && (
