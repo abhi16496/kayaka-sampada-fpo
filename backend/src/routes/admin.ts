@@ -149,10 +149,16 @@ router.put('/registrations/:id/approve', async (req: AuthRequest, res: Response)
   const { notes } = req.body;
 
   try {
-    // Admin can approve at any time, even if already rejected or approved
     const check = await pool.query('SELECT * FROM registrations WHERE id = ?', [id]);
     if (check.rows.length === 0) {
       res.status(404).json({ error: 'Registration not found' });
+      return;
+    }
+
+    const reg = check.rows[0];
+
+    if (reg.status === 'approved') {
+      res.status(400).json({ error: 'Registration is already approved.' });
       return;
     }
 
@@ -163,25 +169,41 @@ router.put('/registrations/:id/approve', async (req: AuthRequest, res: Response)
       [req.admin!.id, notes || null, id]
     );
 
-    const reg = check.rows[0];
-
     await pool.query(
       'INSERT INTO activity_logs (id, admin_id, action, registration_id, details) VALUES (?, ?, ?, ?, ?)',
       [uuidv4(), req.admin!.id, 'approve', id, `Approved registration ${reg.registration_id}`]
     );
 
-    // Send email notification asynchronously in a non-blocking, fail-safe manner
+    let emailSent = false;
+    let emailError = null;
+
     if (reg.email) {
       console.log(`[Email Notification] Triggering SES email send for: ${reg.email}`);
-      sendApprovalEmail(reg.email, reg.full_name, reg.registration_id)
-        .catch(err => {
-          console.error(`[Email Notification Error] Error sending email to ${reg.email}:`, err);
-        });
+      try {
+        await sendApprovalEmail(reg.email, reg.full_name, reg.registration_id);
+        emailSent = true;
+        await pool.query(
+          'INSERT INTO activity_logs (id, admin_id, action, registration_id, details) VALUES (?, ?, ?, ?, ?)',
+          [uuidv4(), req.admin!.id, 'email_sent', id, `Approval email sent successfully to ${reg.email}`]
+        );
+      } catch (err: any) {
+        emailError = err.message || 'Unknown email error';
+        console.error(`[Email Notification Error] Error sending email to ${reg.email}:`, err);
+        await pool.query(
+          'INSERT INTO activity_logs (id, admin_id, action, registration_id, details) VALUES (?, ?, ?, ?, ?)',
+          [uuidv4(), req.admin!.id, 'email_failed', id, `Failed to send approval email: ${emailError}`]
+        );
+      }
     } else {
       console.log(`[Email Notification] No email address found for registration: ${reg.registration_id}`);
     }
 
-    res.json({ message: 'Registration approved successfully', registration: { ...reg, status: 'approved' } });
+    res.json({ 
+      message: 'Registration approved successfully', 
+      emailSent,
+      emailError,
+      registration: { ...reg, status: 'approved' } 
+    });
   } catch (err) {
     console.error('Approve error:', err);
     res.status(500).json({ error: 'Failed to approve registration' });
