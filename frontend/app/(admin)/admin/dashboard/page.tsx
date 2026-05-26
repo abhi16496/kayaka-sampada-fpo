@@ -453,7 +453,7 @@ export default function AdminDashboard() {
           )}
 
           {/* REGISTRATIONS TABLE */}
-          {section !== 'dashboard' && section !== 'logs' && (
+          {section !== 'dashboard' && section !== 'logs' && section !== 'admins' && (
             <div>
               {/* Search bar */}
               <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', gap: '.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
