@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   FileText, UserPlus, Search, Clock, CheckCircle,
@@ -19,8 +20,8 @@ export default function UserHomePage() {
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="user-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg,var(--blue-800),var(--blue-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <FileText size={18} color="#fff" />
+          <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#fff', flexShrink: 0, overflow: 'hidden', border: '1px solid var(--border)' }}>
+            <Image src="/logo.jpeg" alt="Logo" width={38} height={38} style={{ objectFit: 'cover' }} />
           </div>
           <div>
             <p style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', lineHeight: 1.1 }}>Kayaka Sampada</p>
@@ -47,6 +48,12 @@ export default function UserHomePage() {
 
         <div style={{ maxWidth: 740, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: 120, height: 120, borderRadius: '50%', background: '#fff', padding: 4, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+                <Image src="/logo.jpeg" alt="Logo" width={112} height={112} style={{ borderRadius: '50%', objectFit: 'cover' }} priority />
+              </div>
+            </div>
+
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.12)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,.18)', color: '#bfdbfe', padding: '.4rem 1rem', borderRadius: 99, fontSize: '.82rem', fontWeight: 600, marginBottom: '1.5rem', letterSpacing: '.03em' }}>
               ✦ OFFICIAL REGISTRATION PORTAL
             </span>
@@ -167,7 +174,9 @@ export default function UserHomePage() {
       {/* ── Footer ─────────────────────────────────────────────── */}
       <footer className="user-footer">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: '.625rem' }}>
-          <FileText size={16} color="var(--blue-400)" />
+          <div style={{ width: 24, height: 24, borderRadius: '50%', overflow: 'hidden', background: '#fff' }}>
+            <Image src="/logo.jpeg" alt="Logo" width={24} height={24} style={{ objectFit: 'cover' }} />
+          </div>
           <span style={{ color: '#fff', fontWeight: 700 }}>Kayaka Sampada</span>
         </div>
         <p>© {new Date().getFullYear()} Kayaka Sampada Farmer Producer Organisation. All rights reserved.</p>
