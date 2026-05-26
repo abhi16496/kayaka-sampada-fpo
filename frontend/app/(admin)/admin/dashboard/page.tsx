@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Users, Clock, CheckCircle, XCircle, LogOut,
   Search, Download, Eye, ChevronLeft, ChevronRight,
   Menu, X, FileText, Activity, RefreshCw, AlertCircle,
-  TrendingUp, Calendar, ExternalLink, Trash2
+  TrendingUp, Calendar, ExternalLink, Trash2, UserPlus, Shield
 } from 'lucide-react';
 
 const API_URL = '';
@@ -23,8 +23,9 @@ interface Registration {
 }
 interface Stats { total: string; pending: string; approved: string; rejected: string; today: string; }
 interface ActivityLog { action: string; details: string; created_at: string; admin_name: string; registration_id?: string; }
+interface AdminUser { id: string; username: string; email: string | null; created_at: string; last_login: string | null; }
 
-type Section = 'dashboard' | 'pending' | 'approved' | 'rejected' | 'all' | 'logs';
+type Section = 'dashboard' | 'pending' | 'approved' | 'rejected' | 'all' | 'logs' | 'admins';
 
 const STATUS_COLORS = {
   pending:  { badge: 'badge-pending',  dot: 'var(--warning)' },
@@ -58,6 +59,9 @@ export default function AdminDashboard() {
   const [sortOrder, setSortOrder]= useState('DESC');
   const [adminUser, setAdminUser] = useState<{ username: string } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [adminsList, setAdminsList] = useState<AdminUser[]>([]);
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ username: '', email: '', password: '' });
 
   const closeDetailsModal = () => {
     setSelectedReg(null);
@@ -109,11 +113,20 @@ export default function AdminDashboard() {
     } catch { /* silent */ }
   }, []);
 
+  // ── Fetch admins ──────────────────────────────────────────────
+  const fetchAdmins = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/admin/admins`, { headers: authHeaders() });
+      setAdminsList(res.data.admins);
+    } catch { /* silent */ }
+  }, []);
+
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
   useEffect(() => {
     if (section === 'logs') { fetchLogs(); return; }
+    if (section === 'admins') { fetchAdmins(); return; }
     fetchRegs(section, page, search, sortBy, sortOrder);
-  }, [section, page, sortBy, sortOrder, fetchRegs, fetchLogs]);
+  }, [section, page, sortBy, sortOrder, fetchRegs, fetchLogs, fetchAdmins]);
 
   const handleSearch = () => { setPage(1); fetchRegs(section, 1, search, sortBy, sortOrder); };
 
@@ -202,6 +215,26 @@ export default function AdminDashboard() {
     } catch { toast.error('Export failed'); }
   };
 
+  // ── Create Admin ──────────────────────────────────────────────
+  const handleAddAdmin = async () => {
+    if (!newAdmin.username || !newAdmin.password) {
+      toast.error('Username and password are required');
+      return;
+    }
+    setActionLoading(true);
+    try {
+      await axios.post(`${API_URL}/api/admin/admins`, newAdmin, { headers: authHeaders() });
+      toast.success('Admin created successfully');
+      setShowAddAdmin(false);
+      setNewAdmin({ username: '', email: '', password: '' });
+      fetchAdmins();
+    } catch (err: unknown) {
+      toast.error(axios.isAxiosError(err) ? err.response?.data?.error || 'Failed to create admin' : 'Failed to create admin');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser');
     router.push('/admin/login');
@@ -214,6 +247,7 @@ export default function AdminDashboard() {
     { key: 'approved',  label: 'Approved',       icon: CheckCircle, count: stats?.approved },
     { key: 'rejected',  label: 'Rejected',       icon: XCircle,     count: stats?.rejected },
     { key: 'logs',      label: 'Activity Logs',  icon: Activity },
+    { key: 'admins',    label: 'Manage Admins',  icon: Shield },
   ];
 
   const navigate = (key: Section) => {
@@ -571,6 +605,41 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
+
+          {/* MANAGE ADMINS */}
+          {section === 'admins' && (
+            <div className="card" style={{ overflow: 'hidden' }}>
+              <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>System Administrators</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '.84rem', marginTop: 2 }}>Manage admin accounts and their access.</p>
+                </div>
+                <button onClick={() => setShowAddAdmin(true)} className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <UserPlus size={14} /> Add New Admin
+                </button>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr><th>Username</th><th>Email</th><th>Created At</th><th>Last Login</th></tr>
+                  </thead>
+                  <tbody>
+                    {adminsList.map(admin => (
+                      <tr key={admin.id}>
+                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{admin.username}</td>
+                        <td style={{ color: 'var(--text-secondary)' }}>{admin.email || '—'}</td>
+                        <td style={{ color: 'var(--text-secondary)' }}>{new Date(admin.created_at).toLocaleDateString('en-IN')}</td>
+                        <td style={{ color: 'var(--text-muted)' }}>{admin.last_login ? new Date(admin.last_login).toLocaleString('en-IN') : 'Never'}</td>
+                      </tr>
+                    ))}
+                    {adminsList.length === 0 && (
+                      <tr><td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No administrators found.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -697,6 +766,64 @@ export default function AdminDashboard() {
                     )}
                   </>
                 )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Add Admin Modal ──────────────────────────────── */}
+      <AnimatePresence>
+        {showAddAdmin && (
+          <div className="modal-overlay" onClick={() => setShowAddAdmin(false)}>
+            <motion.div
+              className="modal-box"
+              initial={{ opacity: 0, scale: .9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: .9 }}
+              onClick={e => e.stopPropagation()}
+              style={{ maxWidth: 400 }}
+            >
+              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)' }}>Add New Admin</h2>
+                <button onClick={() => setShowAddAdmin(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={18} /></button>
+              </div>
+              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">Username <span style={{ color: 'var(--danger)' }}>*</span></label>
+                  <input
+                    className="form-input"
+                    value={newAdmin.username}
+                    onChange={e => setNewAdmin(n => ({ ...n, username: e.target.value }))}
+                    placeholder="Enter unique username"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Email (Optional)</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={newAdmin.email}
+                    onChange={e => setNewAdmin(n => ({ ...n, email: e.target.value }))}
+                    placeholder="admin@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Password <span style={{ color: 'var(--danger)' }}>*</span></label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    value={newAdmin.password}
+                    onChange={e => setNewAdmin(n => ({ ...n, password: e.target.value }))}
+                    placeholder="Secure password"
+                  />
+                </div>
+              </div>
+              <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', gap: '.5rem' }}>
+                <button onClick={() => setShowAddAdmin(false)} className="btn btn-ghost" disabled={actionLoading}>Cancel</button>
+                <button onClick={handleAddAdmin} className="btn btn-primary" disabled={actionLoading}>
+                  {actionLoading ? <><div className="spinner" /> Creating...</> : 'Create Admin'}
+                </button>
               </div>
             </motion.div>
           </div>

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import pool from '../models/db';
 import { authenticateAdmin, AuthRequest } from '../middleware/auth';
 import { sendApprovalEmail } from '../utils/ses';
+import bcrypt from 'bcryptjs';
 
 const router = Router();
 
@@ -357,6 +358,69 @@ router.delete('/registrations/:id', async (req: AuthRequest, res: Response): Pro
   } catch (err) {
     console.error('Delete error:', err);
     res.status(500).json({ error: 'Failed to delete registration' });
+  }
+});
+
+// ─── List Admins ─────────────────────────────────────────────
+// GET /api/admin/admins
+router.get('/admins', async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const result = await pool.query(
+      `SELECT id, username, email, created_at, last_login
+       FROM admins
+       ORDER BY created_at ASC`
+    );
+    res.json({ admins: result.rows });
+  } catch (err) {
+    console.error('List admins error:', err);
+    res.status(500).json({ error: 'Failed to fetch admins' });
+  }
+});
+
+// ─── Create Admin ────────────────────────────────────────────
+// POST /api/admin/admins
+router.post('/admins', async (req: AuthRequest, res: Response): Promise<void> => {
+  const { username, email, password } = req.body;
+
+  if (!username || !password) {
+    res.status(400).json({ error: 'Username and password are required' });
+    return;
+  }
+
+  try {
+    // Check if username already exists
+    const checkUser = await pool.query('SELECT id FROM admins WHERE username = ?', [username]);
+    if (checkUser.rows.length > 0) {
+      res.status(400).json({ error: 'Username already exists' });
+      return;
+    }
+
+    if (email) {
+      const checkEmail = await pool.query('SELECT id FROM admins WHERE email = ?', [email]);
+      if (checkEmail.rows.length > 0) {
+        res.status(400).json({ error: 'Email already exists' });
+        return;
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newAdminId = uuidv4();
+
+    await pool.query(
+      `INSERT INTO admins (id, username, email, password_hash)
+       VALUES (?, ?, ?, ?)`,
+      [newAdminId, username, email || null, hashedPassword]
+    );
+
+    await pool.query(
+      'INSERT INTO activity_logs (id, admin_id, action, details) VALUES (?, ?, ?, ?)',
+      [uuidv4(), req.admin!.id, 'create_admin', `Created new admin: ${username}`]
+    );
+
+    res.json({ message: 'Admin created successfully', admin: { id: newAdminId, username, email } });
+  } catch (err) {
+    console.error('Create admin error:', err);
+    res.status(500).json({ error: 'Failed to create admin' });
   }
 });
 
