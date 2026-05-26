@@ -48,9 +48,9 @@ export default function UserHomePage() {
 
         <div style={{ maxWidth: 740, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ width: 120, height: 120, borderRadius: '50%', background: '#fff', padding: 4, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
-                <Image src="/logo.jpeg" alt="Logo" width={112} height={112} style={{ borderRadius: '50%', objectFit: 'cover' }} priority />
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+              <div style={{ width: 200, height: 200, borderRadius: '50%', background: '#fff', padding: 6, boxShadow: '0 12px 40px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
+                <Image src="/logo.jpeg" alt="Logo" width={188} height={188} style={{ borderRadius: '50%', objectFit: 'cover' }} priority />
               </div>
             </div>
 
