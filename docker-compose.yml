@@ -17,8 +17,8 @@ services:
       # AWS SES — email notifications on admin approval
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION:-us-east-1}
-      AWS_SES_SENDER: ${AWS_SES_SENDER:-no-reply@kayakasampadafpo.org}
+      AWS_REGION: ${AWS_REGION:-ap-south-1}
+      AWS_SES_SENDER: ${AWS_SES_SENDER:-info@codeflurry.com}
       # Database connection (PostgreSQL in Coolify)
       DATABASE_URL: ${DATABASE_URL}
       DB_HOST: ${DB_HOST}

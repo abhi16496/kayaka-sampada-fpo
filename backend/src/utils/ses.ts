@@ -3,7 +3,7 @@ import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 let sesClient: SESClient | null = null;
 
 function getSESClient(): { client: SESClient | null; senderEmail: string } {
-  const senderEmail = process.env.AWS_SES_SENDER || 'no-reply@kayakasampadafpo.org';
+  const senderEmail = process.env.AWS_SES_SENDER || 'info@codeflurry.com';
   
   if (sesClient) {
     return { client: sesClient, senderEmail };
@@ -11,7 +11,7 @@ function getSESClient(): { client: SESClient | null; senderEmail: string } {
 
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const region = process.env.AWS_REGION || 'us-east-1';
+  const region = process.env.AWS_REGION || 'ap-south-1';
 
   if (accessKeyId && secretAccessKey) {
     sesClient = new SESClient({
