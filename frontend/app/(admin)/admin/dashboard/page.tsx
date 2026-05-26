@@ -494,12 +494,6 @@ export default function AdminDashboard() {
                       <div className="spinner-dark" style={{ margin: '0 auto 1rem' }} />
                       <p style={{ color: 'var(--text-muted)', fontSize: '.9rem' }}>Loading...</p>
                     </div>
-                  ) : registrations.length === 0 ? (
-                    <div style={{ padding: '3rem', textAlign: 'center' }}>
-                      <Users size={38} style={{ color: 'var(--text-muted)', opacity: .35, margin: '0 auto 1rem' }} />
-                      <p style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>No registrations found</p>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '.875rem', marginTop: 4 }}>Try adjusting your search or filters</p>
-                    </div>
                   ) : (
                     <table className="data-table">
                       <thead>
@@ -522,6 +516,9 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
+                        {registrations.length === 0 && (
+                          <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No registrations found.</td></tr>
+                        )}
                         {registrations.map(reg => (
                           <tr key={reg.id}>
                             <td>
