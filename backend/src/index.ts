@@ -16,10 +16,28 @@ import { testConnection } from './models/db';
 const app = express();
 const PORT = process.env.BACKEND_PORT || (process.env.PORT && process.env.PORT !== '3000' ? process.env.PORT : 5000);
 
+// ─── Trust proxy (required when running behind Coolify/nginx reverse proxy) ──
+// Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+app.set('trust proxy', 1);
+
 // ─── Security Middleware ──────────────────────────────────────
 app.use(helmet());
+
+// Build allowed origins list from env var (comma-separated) plus always allow localhost
+const rawOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(s => s.trim());
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow server-to-server requests (no origin) and OPTIONS preflight
+    if (!origin) return callback(null, true);
+    // Check against configured origins
+    if (rawOrigins.some(allowed => origin === allowed)) return callback(null, true);
+    // Allow any sslip.io or nip.io subdomain (used by Coolify public URLs)
+    if (/^https?:\/\/[^.]+\.\d+\.\d+\.\d+\.\d+\.(sslip|nip)\.io$/.test(origin)) return callback(null, true);
+    // Allow localhost on any port
+    if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
+    return callback(new Error(`CORS: origin '${origin}' not allowed`));
+  },
   credentials: true,
 }));
 

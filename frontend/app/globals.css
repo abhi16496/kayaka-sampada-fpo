@@ -410,6 +410,23 @@ body {
 
 
 /* ═══════════════════════════════════════════════════════════════
+   ADMIN PANEL — MAIN CONTENT AREA
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Desktop: push content right of the 256px sidebar */
+.admin-main-content {
+  margin-left: 256px;
+}
+
+/* Desktop: hide hamburger, show 2-col chart grid */
+.mobile-menu-btn {
+  display: none;
+}
+.admin-chart-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -418,6 +435,38 @@ body {
     transition: transform .28s cubic-bezier(.4,0,.2,1);
   }
   .admin-sidebar.open { transform: translateX(0); }
+
+  /* On mobile the sidebar is overlaid — remove left margin */
+  .admin-main-content {
+    margin-left: 0 !important;
+  }
+
+  /* Show hamburger button on mobile */
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  /* Chart grid becomes single column on mobile */
+  .admin-chart-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Topbar action buttons: shrink on mobile */
+  .admin-topbar {
+    padding: 0 1rem;
+    gap: .5rem;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 60px;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+  }
+
+  /* Hide export/refresh labels on very small screens */
+  .admin-topbar .btn-ghost span,
+  .admin-topbar .btn-outline span {
+    display: none;
+  }
 }
 
 .stats-grid {
@@ -439,5 +488,16 @@ body {
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem !important;
+  }
+
+  /* Admin page body padding */
+  .admin-panel .admin-main-content > div:last-child {
+    padding: 1rem;
+  }
+
+  /* Search toolbar: stack vertically on mobile */
+  .admin-panel .card > div[style*="flex-wrap"] {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

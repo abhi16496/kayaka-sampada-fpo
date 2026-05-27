@@ -1,10 +1,155 @@
-DATABASE_URL=https://server.codeflurry.tech/project/zm6asz70ehipd29uqveho8i5/environment/bggdkw8h7ywrypauml1zhor2/application/gt5h4bw0wnxz4op6yolrdwqn
-JWT_SECRET=KayakaSampada@SecretKey2026!XyZ9q8w7e6r5
-NODE_ENV=production
-FRONTEND_URL=http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io
+2026-May-27 11:31:53.399202 Docker 29.4.2 with BuildKit and Buildx detected on deployment server (localhost).
+2026-May-27 11:31:53.415388 Starting deployment of abhi16496/kayaka-sampada-fpo:main to localhost.
+2026-May-27 11:31:53.633720 Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.14
+2026-May-27 11:31:55.903208 ----------------------------------------
+2026-May-27 11:31:55.922880 Importing abhi16496/kayaka-sampada-fpo:main (commit sha ec28ea7e67ab64bafc0f069c025a31fce00c20a8) to /artifacts/gn6gbzgdoa1wnyk7d6rtwypc.
+2026-May-27 11:31:57.634935 Image not found (gt5h4bw0wnxz4op6yolrdwqn:ec28ea7e67ab64bafc0f069c025a31fce00c20a8). Building new image.
+2026-May-27 11:31:58.666897 ----------------------------------------
+2026-May-27 11:31:58.673456 ⚠️ Build-time environment variable warning: NODE_ENV=production
+2026-May-27 11:31:58.679732 Affects: Node.js/npm/yarn/bun/pnpm
+2026-May-27 11:31:58.685795 Issue: Skips devDependencies installation which are often required for building (webpack, typescript, etc.)
+2026-May-27 11:31:58.692006 Recommendation: Uncheck "Available at Buildtime" or use "development" during build
+2026-May-27 11:31:58.698179
+2026-May-27 11:31:58.704336 💡 Tips to resolve build issues:
+2026-May-27 11:31:58.710399 1. Set these variables as "Runtime only" in the environment variables settings
+2026-May-27 11:31:58.717158 2. Use different values for build-time (e.g., NODE_ENV=development for build)
+2026-May-27 11:31:58.724501 3. Consider using multi-stage Docker builds to separate build and runtime environments
+2026-May-27 11:31:59.297873 ----------------------------------------
+2026-May-27 11:31:59.305439 Building docker image started.
+2026-May-27 11:31:59.312816 To check the current progress, click on Show Debug Logs.
+2026-May-27 11:32:24.057564 Building docker image completed.
+2026-May-27 11:32:24.447882 ----------------------------------------
+2026-May-27 11:32:24.456642 Rolling update started.
+2026-May-27 11:32:25.202084 New container started.
+2026-May-27 11:32:25.209606 Removing old containers.
+2026-May-27 11:32:25.955523 Rolling update completed.
+2026-May-27 11:32:26.322473 Gracefully shutting down build container: gn6gbzgdoa1wnyk7d6rtwypc
 
-# AWS SES Configuration for Coolify Production Deployment
-AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
-AWS_REGION=ap-south-1
-AWS_SES_SENDER=info@codeflurry.com
+
+
+[frontend] ▲ Next.js 16.2.6
+[frontend] - Local:         http://localhost:3000
+[frontend] - Network:       http://0.0.0.0:3000
+[frontend] ✓ Ready in 0ms
+[backend] 🔄 Checking and initializing PostgreSQL Database...
+[backend] ✅ PostgreSQL Database connected and initialized
+[backend] 🚀 Server running on http://localhost:5000
+[backend] ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+[backend]     at Object.xForwardedForHeader (/app/backend/node_modules/express-rate-limit/dist/index.cjs:185:13)
+[backend]     at wrappedValidations.<computed> [as xForwardedForHeader] (/app/backend/node_modules/express-rate-limit/dist/index.cjs:397:22)
+[backend]     at Object.keyGenerator (/app/backend/node_modules/express-rate-limit/dist/index.cjs:658:20)
+[backend]     at /app/backend/node_modules/express-rate-limit/dist/index.cjs:710:32
+[backend]     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[backend]     at async /app/backend/node_modules/express-rate-limit/dist/index.cjs:691:5 {
+[backend]   code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+[backend]   help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+[backend] }
+[backend] ::1 - - [27/May/2026:11:33:10 +0000] "GET /api/admin/dashboard HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+[backend] ::1 - - [27/May/2026:11:33:13 +0000] "GET /api/admin/admins HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+[backend] ::1 - - [27/May/2026:11:33:17 +0000] "GET /api/admin/logs HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+[backend] ::1 - - [27/May/2026:11:35:45 +0000] "GET /api/admin/dashboard HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+[backend] ::1 - - [27/May/2026:11:37:29 +0000] "GET /api/admin/dashboard HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+[backend] ::1 - - [27/May/2026:11:37:56 +0000] "GET /api/admin/registrations?status=&search=&page=1&limit=10&sortBy=submitted_at&sortOrder=DESC HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+[backend] ::1 - - [27/May/2026:11:37:56 +0000] "GET /api/admin/registrations?status=approved&search=&page=1&limit=10&sortBy=submitted_at&sortOrder=DESC HTTP/1.1" 304 - "http://gt5h4bw0wnxz4op6yolrdwqn.78.31.67.209.sslip.io/admin/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+
+
+
+
+
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are enabled.
+
+fixing permissions on existing directory /var/lib/postgresql/18/docker ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/18/docker -l logfile start
+
+waiting for server to start....2026-05-22 09:58:08.166 UTC [46] LOG:  starting PostgreSQL 18.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-05-22 09:58:08.168 UTC [46] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-05-22 09:58:08.174 UTC [52] LOG:  database system was shut down at 2026-05-22 09:58:07 UTC
+2026-05-22 09:58:08.179 UTC [46] LOG:  database system is ready to accept connections
+ done
+server started
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+waiting for server to shut down...2026-05-22 09:58:08.264 UTC [46] LOG:  received fast shutdown request
+.2026-05-22 09:58:08.265 UTC [46] LOG:  aborting any active transactions
+2026-05-22 09:58:08.268 UTC [46] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+2026-05-22 09:58:08.268 UTC [50] LOG:  shutting down
+2026-05-22 09:58:08.269 UTC [50] LOG:  checkpoint starting: shutdown immediate
+2026-05-22 09:58:08.277 UTC [50] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.001 s, total=0.009 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/175F3A8, redo lsn=0/175F3A8
+2026-05-22 09:58:08.289 UTC [46] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+sh: locale: not found
+2026-05-22 09:58:07.552 UTC [40] WARNING:  no usable system locales were found
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+2026-05-22 09:58:08.389 UTC [1] LOG:  starting PostgreSQL 18.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-05-22 09:58:08.389 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-05-22 09:58:08.389 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-05-22 09:58:08.391 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-05-22 09:58:08.396 UTC [66] LOG:  database system was shut down at 2026-05-22 09:58:08 UTC
+2026-05-22 09:58:08.400 UTC [1] LOG:  database system is ready to accept connections
+2026-05-22 09:58:53.430 UTC [136] FATAL:  password authentication failed for user "netdata"
+2026-05-22 09:58:53.430 UTC [136] DETAIL:  Role "netdata" does not exist.
+	Connection matched file "/var/lib/postgresql/18/docker/pg_hba.conf" line 128: "host all all all scram-sha-256"
+2026-05-22 10:03:08.494 UTC [64] LOG:  checkpoint starting: time
+2026-05-22 10:03:12.716 UTC [64] LOG:  checkpoint complete: wrote 42 buffers (0.3%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=4.212 s, sync=0.006 s, total=4.222 s; sync files=11, longest=0.003 s, average=0.001 s; distance=317 kB, estimate=317 kB; lsn=0/17AE960, redo lsn=0/17AE908
+2026-05-26 05:39:57.321 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 05:40:04.666 UTC [64] LOG:  checkpoint complete: wrote 73 buffers (0.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=7.332 s, sync=0.005 s, total=7.347 s; sync files=51, longest=0.002 s, average=0.001 s; distance=304 kB, estimate=316 kB; lsn=0/17FAAE8, redo lsn=0/17FAA90
+2026-05-26 05:49:57.866 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 05:49:58.579 UTC [64] LOG:  checkpoint complete: wrote 7 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.705 s, sync=0.003 s, total=0.713 s; sync files=8, longest=0.002 s, average=0.001 s; distance=4 kB, estimate=284 kB; lsn=0/17FBD40, redo lsn=0/17FBCE8
+2026-05-26 05:54:57.678 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 05:54:58.101 UTC [64] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.405 s, sync=0.002 s, total=0.424 s; sync files=5, longest=0.001 s, average=0.001 s; distance=4 kB, estimate=256 kB; lsn=0/17FCF60, redo lsn=0/17FCF08
+2026-05-26 05:59:57.201 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 05:59:57.222 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.021 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=231 kB; lsn=0/17FD0F8, redo lsn=0/17FD0A0
+2026-05-26 06:04:57.321 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:04:57.328 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.007 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=208 kB; lsn=0/17FD290, redo lsn=0/17FD238
+2026-05-26 06:09:57.411 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:09:57.425 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.005 s, total=0.014 s; sync files=1, longest=0.005 s, average=0.005 s; distance=0 kB, estimate=187 kB; lsn=0/17FD428, redo lsn=0/17FD3D0
+2026-05-26 06:14:57.524 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:14:58.246 UTC [64] LOG:  checkpoint complete: wrote 7 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.705 s, sync=0.011 s, total=0.722 s; sync files=8, longest=0.010 s, average=0.002 s; distance=5 kB, estimate=169 kB; lsn=0/17FEB10, redo lsn=0/17FEAB8
+2026-05-26 06:19:57.345 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:19:57.360 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.015 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=152 kB; lsn=0/17FECA8, redo lsn=0/17FEC50
+2026-05-26 06:24:57.459 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:24:57.838 UTC [64] LOG:  checkpoint complete: wrote 3 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.303 s, sync=0.001 s, total=0.379 s; sync files=4, longest=0.001 s, average=0.001 s; distance=5 kB, estimate=137 kB; lsn=0/18003F0, redo lsn=0/1800398
+2026-05-26 06:29:57.937 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 06:29:57.944 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.008 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=123 kB; lsn=0/1800588, redo lsn=0/1800530
+2026-05-26 09:40:01.736 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 09:40:02.164 UTC [64] LOG:  checkpoint complete: wrote 4 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.403 s, sync=0.016 s, total=0.428 s; sync files=5, longest=0.010 s, average=0.004 s; distance=8 kB, estimate=112 kB; lsn=0/1802798, redo lsn=0/1802740
+2026-05-26 09:55:01.464 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 09:55:01.471 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.007 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=101 kB; lsn=0/1802930, redo lsn=0/18028D8
+2026-05-26 10:05:01.670 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 10:05:01.679 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.009 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=91 kB; lsn=0/1802AC8, redo lsn=0/1802A70
+2026-05-26 10:10:01.779 UTC [64] LOG:  checkpoint starting: time
+2026-05-26 10:10:02.102 UTC [64] LOG:  checkpoint complete: wrote 3 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.302 s, sync=0.002 s, total=0.323 s; sync files=4, longest=0.002 s, average=0.001 s; distance=9 kB, estimate=83 kB; lsn=0/1805280, redo lsn=0/1805228
+2026-05-27 11:10:30.869 UTC [64] LOG:  checkpoint starting: time
+2026-05-27 11:10:30.978 UTC [64] LOG:  checkpoint complete: wrote 1 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.102 s, sync=0.002 s, total=0.109 s; sync files=2, longest=0.002 s, average=0.001 s; distance=1 kB, estimate=74 kB; lsn=0/1805978, redo lsn=0/1805920
+2026-05-27 11:20:31.177 UTC [64] LOG:  checkpoint starting: time
+2026-05-27 11:20:31.185 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.008 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=67 kB; lsn=0/1805B10, redo lsn=0/1805AB8
+2026-05-27 11:30:31.384 UTC [64] LOG:  checkpoint starting: time
+2026-05-27 11:30:31.399 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.015 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=60 kB; lsn=0/1805CA8, redo lsn=0/1805C50
+2026-05-27 11:35:31.498 UTC [64] LOG:  checkpoint starting: time
+2026-05-27 11:35:31.505 UTC [64] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.007 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=54 kB; lsn=0/1805E40, redo lsn=0/1805DE8

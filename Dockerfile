@@ -49,10 +49,8 @@ COPY --from=backend-builder /app/backend/dist ./dist
 # Copy Frontend production assets
 WORKDIR /app/frontend
 COPY --from=frontend-builder /app/frontend/public ./public
-COPY --from=frontend-builder /app/frontend/public ./frontend/public
 COPY --from=frontend-builder /app/frontend/.next/standalone ./
 COPY --from=frontend-builder /app/frontend/.next/static ./.next/static
-COPY --from=frontend-builder /app/frontend/.next/static ./frontend/.next/static
 
 # Expose Next.js port (Next.js automatically proxies api requests to backend internally)
 EXPOSE 3000

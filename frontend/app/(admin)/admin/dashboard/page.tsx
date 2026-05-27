@@ -322,7 +322,7 @@ export default function AdminDashboard() {
       {sidebarOpen && <div onClick={() => setSidebar(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 35 }} />}
 
       {/* ── Main ─────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, marginLeft: 256, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="admin-main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* Topbar */}
         <header className="admin-topbar">
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
             <button
               onClick={() => setSidebar(true)}
               id="mobile-menu-btn"
-              style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', padding: 4 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', padding: 4 }}
               className="mobile-menu-btn"
             >
               <Menu size={22} />
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Chart + Activity */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+              <div className="admin-chart-grid" style={{ display: 'grid', gap: '1.25rem' }}>
                 <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .3 }} className="card" style={{ padding: '1.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '1.25rem' }}>
                     <TrendingUp size={17} color="var(--blue-700)" />
