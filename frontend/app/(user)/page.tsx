@@ -25,14 +25,14 @@ export default function UserHomePage() {
           </div>
           <div>
             <p style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', lineHeight: 1.1 }}>Kayaka Sampada</p>
-            <p style={{ fontSize: '.7rem', color: 'var(--text-muted)', letterSpacing: '.03em' }}>Farmer Producer Organisation</p>
+            <p className="hide-on-mobile" style={{ fontSize: '.7rem', color: 'var(--text-muted)', letterSpacing: '.03em' }}>Farmer Producer Organisation</p>
           </div>
         </div>
         <nav style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
           <Link href="/status" style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary)', fontWeight: 500, textDecoration: 'none', fontSize: '.9rem', padding: '.4rem .8rem', borderRadius: 8, transition: 'background .2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-            <Search size={15} /> Check Status
+            <Search size={15} /> <span className="hide-on-mobile">Check Status</span>
           </Link>
           <Link href="/register" className="btn btn-primary btn-sm">
             Register Now
@@ -82,7 +82,7 @@ export default function UserHomePage() {
 
       {/* ── Trust bar ──────────────────────────────────────────── */}
       <section style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.25rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center' }}>
+        <div className="stats-grid" style={{ maxWidth: 900, margin: '0 auto', padding: '1.25rem 1.5rem', textAlign: 'center' }}>
           {[['Secure Portal', 'SSL Secured'], ['Review Time', '< 24 hrs'], ['Availability', '24 / 7']].map(([label, val]) => (
             <div key={label}>
               <p style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--blue-800)' }}>{val}</p>

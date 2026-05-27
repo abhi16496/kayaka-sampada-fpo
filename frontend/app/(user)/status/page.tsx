@@ -62,9 +62,9 @@ export default function StatusPage() {
           <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>Kayaka Sampada</span>
         </div>
         <div style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
-          <Link href="/register" className="btn btn-primary btn-sm">Register Now</Link>
+          <Link href="/register" className="btn btn-primary btn-sm">Register <span className="hide-on-mobile">Now</span></Link>
           <Link href="/" className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <ArrowLeft size={14} /> Home
+            <ArrowLeft size={14} /> <span className="hide-on-mobile">Home</span>
           </Link>
         </div>
       </header>

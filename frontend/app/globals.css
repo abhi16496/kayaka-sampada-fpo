@@ -419,3 +419,25 @@ body {
   }
   .admin-sidebar.open { transform: translateX(0); }
 }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .user-site .user-header {
+    padding: 0 1rem;
+  }
+  .user-site .user-header .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem !important;
+  }
+}

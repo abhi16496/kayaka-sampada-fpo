@@ -8,7 +8,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import {
   FileText, ArrowLeft, UserPlus, User, Users, Home,
-  MapPin, Hash, Building, Phone, Mail, CheckCircle, X, ChevronRight
+  MapPin, Hash, Building, Phone, Mail, CheckCircle, X, ChevronRight, Search
 } from 'lucide-react';
 
 const API_URL = '';
@@ -211,10 +211,10 @@ export default function RegisterPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
           <Link href="/status" className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            Check Status
+            <Search size={15} /> <span className="hide-on-mobile">Check Status</span>
           </Link>
           <Link href="/" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <ArrowLeft size={14} /> Home
+            <ArrowLeft size={14} /> <span className="hide-on-mobile">Home</span>
           </Link>
         </div>
       </header>
