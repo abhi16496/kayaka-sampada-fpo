@@ -18,7 +18,8 @@ ENV NODE_ENV=development
 RUN npm ci
 COPY frontend/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_API_URL=http://localhost:5000
+# Empty string so the frontend uses relative /api/* paths (proxied by Next.js rewrites to localhost:5000)
+ENV NEXT_PUBLIC_API_URL=
 # Set production only for the actual build step
 RUN NODE_ENV=production npm run build
 
@@ -29,6 +30,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+# Use BACKEND_PORT so Next.js $PORT=3000 doesn't confuse the backend
+ENV BACKEND_PORT=5000
 
 # Install concurrently to run both backend and frontend easily
 RUN npm install -g concurrently
@@ -55,4 +59,4 @@ EXPOSE 3000
 
 # Run both backend and frontend concurrently under their respective directories
 WORKDIR /app
-CMD ["concurrently", "-k", "--names", "backend,frontend", "-c", "yellow,blue", "cd /app/backend && PORT=5000 node dist/index.js", "cd /app/frontend && node server.js"]
+CMD ["concurrently", "-k", "--names", "backend,frontend", "-c", "yellow,blue", "cd /app/backend && BACKEND_PORT=5000 node dist/index.js", "cd /app/frontend && node server.js"]
